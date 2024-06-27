@@ -3,6 +3,18 @@ export const transfer = {
     summary: 'Transfer AZK token',
     tags: ['Azkal Meme Token'],
     description: 'Schema for transferring AZK token.',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     body: {
         type: 'object',

@@ -3,6 +3,18 @@ export const schemaGetUserNft = {
     summary: 'Get user NFTs',
     tags: ['AstroChibbi NFT'],
     description: 'Schema for getting user NFTs by wallet address. ',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     params: {
         type: 'object',

@@ -3,6 +3,18 @@ export const balanceOf = {
     summary: 'Get XAV balance of the account',
     tags: ['Xaver Utility Token'],
     description: 'Schema for getting XAV balance of the account.',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     params: {
         type: 'object',

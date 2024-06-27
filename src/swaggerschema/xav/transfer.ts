@@ -3,6 +3,18 @@ export const transfer = {
     summary: 'Transfer XAV token',
     tags: ['Xaver Utility Token'],
     description: 'Schema for transferring XAV token.',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     body: {
         type: 'object',

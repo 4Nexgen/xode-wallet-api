@@ -2,6 +2,18 @@ export const schemaPostMarketplace = {
     summary: 'Get an NFT for marketplace',
     tags: ['AstroChibbi NFT'],
     description: 'Schema for getting NFTs for marketplace using collection ID.',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     body: {
         type: 'object',

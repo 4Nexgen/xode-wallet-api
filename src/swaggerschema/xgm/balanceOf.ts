@@ -3,6 +3,18 @@ export const balanceOf = {
     summary: 'Get XGM balance of the account',
     tags: ['XGame Utility Token'],
     description: 'Schema for getting XGM balance of the account.',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     params: {
         type: 'object',

@@ -3,6 +3,18 @@ export const user_token_balance = {
     summary: 'Get user balance on each token.',
     tags: ['Chain'],
     description: 'Schema for getting user token balances. ',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     query: {
         type: 'object',

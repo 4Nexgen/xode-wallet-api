@@ -3,6 +3,18 @@ export const token_list = {
     summary: 'Get list of tokens integrated to XODE',
     tags: ['Chain'],
     description: 'Schema for getting list of tokens. ',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Response schema for success
     response: {
         200: {

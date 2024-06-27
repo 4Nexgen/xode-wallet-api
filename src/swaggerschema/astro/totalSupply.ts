@@ -3,6 +3,18 @@ export const totalSupply = {
     summary: 'Get total supply of ASTRO token',
     tags: ['Astro Economy Token'],
     description: 'Schema for getting total supply of ASTRO token.',
+    headers: {
+        type: 'object',
+        properties: {
+          'Websocket': { 
+            type: 'string',
+            enum: [
+                'wss://testrpcnodea01.xode.net/aRoyklGrhl9m2LlhX8NP/rpc',
+                'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc', 
+            ]
+          }
+        },
+    },
     // Request body schema
     params: {
         type: 'object',

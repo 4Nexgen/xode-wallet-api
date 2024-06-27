@@ -10,7 +10,7 @@ export type AppOptions = {
 
 // Pass --options via CLI arguments in command to enable these options.
 const options: AppOptions = {};
-
+const crypto = require('node:crypto')
 const app: FastifyPluginAsync<AppOptions> = async (
   fastify: any,
   opts
@@ -78,7 +78,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
         '\n' + 'AstroChibbi: ' + process.env.TESTNET_ASTROCHIBBI_ADDRESS as string +
         '\n' + 'Energy Capsule: ' + process.env.TESTNET_ASTRO_ENERGY_ADDRESS as string +
         '\n' + 'Astro Economy: ' + process.env.TESTNET_ASTRO_ECONOMY_ADDRESS as string,
-        version: '0.1.2'
+        version: '0.1.3'
       },
       externalDocs: {
         url: 'https://docs.google.com/document/d/1n-jd_0BXUCzcrUL9df1_uUgGUpkkDADLMRw_fgx41ko',
@@ -107,6 +107,32 @@ const app: FastifyPluginAsync<AppOptions> = async (
     }
   })
 
+  function compare (a: any, b: any) {
+    a = Buffer.from(a)
+    b = Buffer.from(b)
+    if (a.length !== b.length) {
+      crypto.timingSafeEqual(a, a)
+      return false
+    }
+    return crypto.timingSafeEqual(a, b)
+  }
+
+  const user = process.env.USERNAME == undefined ? 'NEXGEN' : process.env.USERNAME;
+  const pass = process.env.PASSWORD == undefined ? '@1234Abcd' : process.env.PASSWORD;
+  await fastify.register(require('@fastify/basic-auth'), {
+    validate (username: any, password: any, req: any, reply: any, done: any) {
+      let result = true
+      result = compare(username, user) && result
+      result = compare(password, pass) && result
+      if (result) {
+        done()
+      } else {
+        done(new Error('Access denied'))
+      }
+    },
+    authenticate: true
+  })
+
   await fastify.register(require('@fastify/swagger-ui'), {
     routePrefix: '/docs',
     uiConfig: {
@@ -114,7 +140,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
       deepLinking: false
     },
     uiHooks: {
-      onRequest: function (request: any, reply: any, next: () => void) { next() },
+      onRequest: fastify.basicAuth,
       preHandler: function (request: any, reply: any, next: () => void) { next() }
     },
     staticCSP: true,

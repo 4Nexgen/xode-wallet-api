@@ -198,7 +198,7 @@ export default class AstroChibbiRepository {
   static async getUserNFTRepo(api: any, wallet_address: string) {
       console.log('getUserNFTRepo function was called');
       const instance = new AstroChibbiRepository();
-      var api: any;
+      // var api: any;
       try {
         // await cryptoWaitReady();
         // api = await InitializeAPI.apiInitialization();
