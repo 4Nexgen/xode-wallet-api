@@ -2,7 +2,10 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import WebsocketHeader from '../modules/WebsocketHeader';
 import MarketingRepository from './../repositories/MarketingRepository'
 import { getAccountData } from '../services/accountService';
+import { marketingAuth } from '../services/authService';
 import cron, { ScheduledTask } from 'node-cron';
+import { IMarketinAuthRequestBody } from '../schemas/AuthSchemas';
+import { IReadMarketingWalletsQuery } from '../schemas/MarketingSchemas';
 
 let job: ScheduledTask;
 let isJobRunning: boolean = false;
@@ -13,6 +16,12 @@ export const manualController = async (
 	reply: FastifyReply
 ) => {
 	try {
+		const body = request.body as IMarketinAuthRequestBody;
+		if (!body || !body.message || !body.signature) {
+			return reply.badRequest("Invalid request body: `message`, `signature`.");
+		}
+		const isValid = await marketingAuth(request);
+		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		const query = request.query as { start: string, end: string };
 		if (!query || !query.start || !query.end) return reply.badRequest('Missing or invalid query.');
 		WebsocketHeader.handleWebsocket(request);
@@ -20,11 +29,11 @@ export const manualController = async (
 		if (account instanceof Error) throw account;
 		account = Array.from(new Set(account));
 		if (Array.isArray(account) && account.length <= 0) {
-			return reply.status(204).send();
+			return reply.send({ count: account.length });
 		}
 		const result = await MarketingRepository.sendTokenRepo(account);
 		if (result instanceof Error) throw result;
-		return await reply.send(result);
+		return reply.send({ count: account.length });
 	} catch (error: any) {
 		reply.status(500).send('Internal Server Error: ' + error);
 	}
@@ -35,6 +44,12 @@ export const startController = async (
   	reply: FastifyReply
 ) => {
 	try {
+		const body = request.body as IMarketinAuthRequestBody;
+		if (!body || !body.message || !body.signature) {
+			return reply.badRequest("Invalid request body: `message`, `signature`.");
+		}
+		const isValid = await marketingAuth(request);
+		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		WebsocketHeader.handleWebsocket(request);
 		if (!job) {
 			job = cron.schedule('0 * * * *', async () => { // 0 * * * * call every hour
@@ -84,6 +99,12 @@ export const pauseController = async (
 	reply: FastifyReply
   ) => {
 	try {
+		const body = request.body as IMarketinAuthRequestBody;
+		if (!body || !body.message || !body.signature) {
+			return reply.badRequest("Invalid request body: `message`, `signature`.");
+		}
+		const isValid = await marketingAuth(request);
+		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		WebsocketHeader.handleWebsocket(request);
 		if (job && isJobRunning) {
             job.stop();
@@ -95,4 +116,37 @@ export const pauseController = async (
 	} catch (error: any) {
 	  	reply.status(500).send('Internal Server Error: ' + error);
 	}
+};
+
+export const statusController = async (
+    request: FastifyRequest,
+    reply: FastifyReply
+) => {
+    try {
+        return reply.send({ running: job !== undefined && isJobRunning });
+    } catch (error: any) {
+        reply.status(500).send('Internal Server Error: ' + error);
+    }
+};
+
+export const marketingWalletController = async (
+    request: FastifyRequest,
+    reply: FastifyReply
+) => {
+    try {
+        const query = request.query as Partial<IReadMarketingWalletsQuery>;
+		if (!query || 
+			!query.page ||
+			!query.entry
+		) {
+			return reply.badRequest("Missing or invalid required query: 'page', 'entry'.");
+		}
+        const result = await MarketingRepository.getMarketWallets(query);
+        if (result instanceof Error) {
+            throw result;
+        }
+        return reply.send({ data: result });
+    } catch (error: any) {
+        reply.status(500).send('Internal Server Error: ' + error);
+    }
 };

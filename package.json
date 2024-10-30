@@ -39,7 +39,9 @@
     "fastify-cli": "^5.7.1",
     "fastify-plugin": "^4.0.0",
     "node-cron": "^3.0.3",
-    "superagent": "^8.0.9"
+    "superagent": "^8.0.9",
+	"prisma-extension-pagination": "^0.6.0",
+    "prisma-paginate": "^5.2.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

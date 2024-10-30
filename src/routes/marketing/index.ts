@@ -7,6 +7,8 @@ import {
 	manualController,
 	startController,
 	pauseController,
+	statusController,
+	marketingWalletController,
 } from '../../controllers/MarketingController';
 
 const marketing: FastifyPluginAsync = async (fastify, opts) => {
@@ -32,6 +34,22 @@ const marketing: FastifyPluginAsync = async (fastify, opts) => {
 	}>(
 		'/pause',
 		pauseController
+	);
+
+	fastify.get<{
+		Querystring: FastifyRequest;
+		Reply: FastifyReply;
+	}>(
+		'/status',
+		statusController
+	);
+
+	fastify.get<{
+		Querystring: FastifyRequest;
+		Reply: FastifyReply;
+	}>(
+		'/',
+		marketingWalletController
 	);
 };
 
