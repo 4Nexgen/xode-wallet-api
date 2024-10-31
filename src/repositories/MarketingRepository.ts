@@ -45,10 +45,11 @@ export default class MarketingRepository {
 					const unitFactor = 10 ** 12
 					const partialFee  = info.partialFee.toString();
 					const fee = parseFloat(partialFee) / unitFactor;
+					const amount = value / unitFactor;
 					if (result) await this.storeMarketingData(
 						address,
-						String(value),
-						String(fee.toFixed(12)),
+						amount.toFixed(12),
+						fee.toFixed(12),
 						result.toHex(),
 						"Game"
 					)
@@ -96,8 +97,8 @@ export default class MarketingRepository {
 			const amount = value / unitFactor;
 			if (result) await this.storeMarketingData(
 				data.address,
-				String(amount.toFixed(12)),
-				String(fee.toFixed(12)),
+				amount.toFixed(12),
+				fee.toFixed(12),
 				result.toHex(),
 				"Feedback"
 			)
@@ -149,19 +150,27 @@ export default class MarketingRepository {
 			};
 			const prisma = new PrismaClient();
 			const xprisma = prisma.$extends(extension);
-			const paginatedResult = await xprisma.marketing_wallets.paginate(
-				{
-					where: validQuery,
-					orderBy: {
-						id: 'desc',
+			const [sums, result] = await Promise.all([
+				prisma.marketing_wallets.aggregate({
+					_sum: {
+					  amount: true,
+					  fee: true,
 					},
-				},
-				{
-					limit: Number(query.entry),
-					page: Number(query.page),
-				}
-			);
-			return paginatedResult;
+				}),
+				xprisma.marketing_wallets.paginate(
+					{
+						where: validQuery,
+						orderBy: {
+							id: 'desc',
+						},
+					},
+					{
+						limit: Number(query.entry),
+						page: Number(query.page),
+					}
+				)
+			]);
+			return { ...result, sums };
 		} catch (error: any) {
 			return Error(error);
 		}
