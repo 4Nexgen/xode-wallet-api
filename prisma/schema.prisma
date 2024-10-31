@@ -23,6 +23,7 @@ model marketing_wallets {
   amount String
   fee String
   hash String
+  received_type String @default("Not classified")
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())
 }

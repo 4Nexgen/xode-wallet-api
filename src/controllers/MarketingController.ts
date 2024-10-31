@@ -4,8 +4,10 @@ import MarketingRepository from './../repositories/MarketingRepository'
 import { getAccountData } from '../services/accountService';
 import { marketingAuth } from '../services/authService';
 import cron, { ScheduledTask } from 'node-cron';
-import { IMarketinAuthRequestBody } from '../schemas/AuthSchemas';
-import { IReadMarketingWalletsQuery } from '../schemas/MarketingSchemas';
+import {
+	IReadMarketingWalletsQuery,
+	ISendTokenFeedbackBody
+} from '../schemas/MarketingSchemas';
 
 let job: ScheduledTask;
 let isJobRunning: boolean = false;
@@ -16,10 +18,6 @@ export const manualController = async (
 	reply: FastifyReply
 ) => {
 	try {
-		const body = request.body as IMarketinAuthRequestBody;
-		if (!body || !body.message || !body.signature) {
-			return reply.badRequest("Invalid request body: `message`, `signature`.");
-		}
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		const query = request.query as { start: string, end: string };
@@ -44,10 +42,6 @@ export const startController = async (
   	reply: FastifyReply
 ) => {
 	try {
-		const body = request.body as IMarketinAuthRequestBody;
-		if (!body || !body.message || !body.signature) {
-			return reply.badRequest("Invalid request body: `message`, `signature`.");
-		}
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		WebsocketHeader.handleWebsocket(request);
@@ -99,10 +93,6 @@ export const pauseController = async (
 	reply: FastifyReply
   ) => {
 	try {
-		const body = request.body as IMarketinAuthRequestBody;
-		if (!body || !body.message || !body.signature) {
-			return reply.badRequest("Invalid request body: `message`, `signature`.");
-		}
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		WebsocketHeader.handleWebsocket(request);
@@ -149,4 +139,25 @@ export const marketingWalletController = async (
     } catch (error: any) {
         reply.status(500).send('Internal Server Error: ' + error);
     }
+};
+
+
+export const marketingFeedbackController = async (
+	request: FastifyRequest,
+	reply: FastifyReply
+) => {
+	try {
+		const isValid = await marketingAuth(request);
+		if (!isValid) return reply.unauthorized('Access unauthorized.');
+		const body = request.body as ISendTokenFeedbackBody;
+		if (!body || !body.address) {
+            return reply.badRequest("Invalid request body.");
+        }
+		WebsocketHeader.handleWebsocket(request);
+		const result = await MarketingRepository.sendTokenByFeedbackRepo(body);
+		if (result instanceof Error) throw result;
+		return reply.send(result);
+	} catch (error: any) {
+		reply.status(500).send('Internal Server Error: ' + error);
+	}
 };

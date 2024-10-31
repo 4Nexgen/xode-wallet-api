@@ -68,10 +68,10 @@ export const getTokensController = async (
       const [tokenResults, rateResult] = await Promise.all([
           Promise.all([
               ChainRepository.getTokensRepo(api, requestParams.wallet_address),
-              // AstroRepository.balanceOfRepo(requestParams.wallet_address),
-              AzkalRepository.balanceOfRepo(api, requestParams.wallet_address),
+              AstroRepository.balanceOfRepo(requestParams.wallet_address),
+            //   AzkalRepository.balanceOfRepo(api, requestParams.wallet_address),
               XGameRepository.balanceOfRepo(api, requestParams.wallet_address),
-              XaverRepository.balanceOfRepo(api, requestParams.wallet_address)
+            //   XaverRepository.balanceOfRepo(api, requestParams.wallet_address)
           ]),
           ChainRepository.forexRepo(requestQuery.currency)
       ]);

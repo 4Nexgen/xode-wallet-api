@@ -7,36 +7,22 @@ on:
 
 jobs:
   build_and_deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Setting up AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
       - name: Build Docker image
-        run: docker build -t xode-wallet-api-app .
-
-      - name: Push Docker Image to ECR
+        run: docker build -t ${{ secrets.DOCKER_HUB_NAMESPACE }}/xode-wallet-api:latest .
+      - name: Push image to DockerHub
         run: |
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
-          docker tag xode-wallet-api-app:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/xode-wallet-api-app:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/xode-wallet-api-app:latest
-      
-      - name: SSH to EC2 Instance
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+          docker push ${{ secrets.DOCKER_HUB_NAMESPACE }}/xode-wallet-api:latest
+      - name: SSH to Xgame Server
         run: |
           mkdir ~/.ssh
-          echo -e "${{ secrets.STAGING_PRIVATE_KEY }}" > ~/.ssh/xgames-keypair
-          chmod 400 ~/.ssh/xgames-keypair
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/xgames-keypair ${{ secrets.STAGING_USERNAME }}@${{ secrets.STAGING_HOST }} \
-            'cd ${{ secrets.STAGING_PATH }} && \  
-            sudo aws configure set aws_access_key_id "${{ secrets.AWS_ACCESS_KEY_ID }}" && \
-            sudo aws configure set aws_secret_access_key "${{ secrets.AWS_SECRET_ACCESS_KEY }}" && \
-            sudo aws configure set default.region "${{ secrets.AWS_REGION }}" && \
-            sudo aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com && \
-            sh deploy_staging.sh'
+          echo -e "${{ secrets.STAGING_PRIVATE_KEY }}" > ~/.ssh/ssh-key
+          chmod 400 ~/.ssh/ssh-key
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ssh-key ${{ secrets.STAGING_USERNAME }}@${{ secrets.STAGING_HOST }} -p ${{ secrets.STAGING_SSH_PORT }} \
+            'cd ${{ secrets.STAGING_PATH }} && \
+            docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }} && \
+            sh deploy_production.sh'

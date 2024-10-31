@@ -29,9 +29,11 @@
     "@polkadot/api": "^10.9.1",
     "@polkadot/api-contract": "^10.9.1",
     "@prisma/client": "^4.15.0",
+    "@types/crypto-js": "^4.2.2",
     "@types/superagent": "^4.1.18",
     "axios": "^1.7.7",
     "bcrypt": "^5.1.0",
+    "crypto-js": "^4.2.0",
     "date-and-time": "^3.0.3",
     "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
@@ -39,9 +41,9 @@
     "fastify-cli": "^5.7.1",
     "fastify-plugin": "^4.0.0",
     "node-cron": "^3.0.3",
-    "superagent": "^8.0.9",
-	"prisma-extension-pagination": "^0.6.0",
-    "prisma-paginate": "^5.2.1"
+    "prisma-extension-pagination": "^0.6.0",
+    "prisma-paginate": "^5.2.1",
+    "superagent": "^8.0.9"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
