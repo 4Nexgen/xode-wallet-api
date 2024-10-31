@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://127.0.0.1:3005/auth';
+const BASE_URL = 'https://product-page-api.xgame.live/auth';
 
 interface WalletResponse {
     wallet_address: string;
