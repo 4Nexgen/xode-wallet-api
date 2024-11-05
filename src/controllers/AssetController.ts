@@ -123,7 +123,16 @@ export const totalSupplyController = async (
 ) => {
   try {
     WebsocketHeader.handleWebsocket(request);
-    const result = await AzkalRepository.totalSupplyRepo();
+	let result;
+    if (request.url.includes("azk")) {
+      result = await AzkalRepository.totalSupplyRepo();
+    } else if (request.url.includes("xav")) {
+      result = await XaverRepository.totalSupplyRepo();
+    } else if (request.url.includes("xgm")) {
+      result = await XGameRepository.totalSupplyRepo();
+    } else if (request.url.includes("ixon")) {
+      result = await IXONRepository.totalSupplyRepo();
+    }
     if (result instanceof Error) {
       throw result;
     }
@@ -151,11 +160,19 @@ export const balanceOfController = async (
     if (!requestParams || !requestParams.account) {
       return reply.badRequest("Invalid request parameter. Required fields: 'account'");
     }
-    const result = await AzkalRepository.balanceOfRepo(api, requestParams.account);
+	let result;
+    if (request.url.includes("azk")) {
+      result = await AzkalRepository.balanceOfRepo(api, requestParams.account);
+    } else if (request.url.includes("xav")) {
+      result = await XaverRepository.balanceOfRepo(api, requestParams.account);
+    } else if (request.url.includes("xgm")) {
+      result = await XGameRepository.balanceOfRepo(api, requestParams.account);
+    } else if (request.url.includes("ixon")) {
+      result = await IXONRepository.balanceOfRepo(api, requestParams.account);
+    }
     if (result instanceof Error) {
       throw result;
     }
-    console.log('azk',result)
     return await reply.send(result);
   } catch (error: any) {
     reply.status(500).send('Internal Server Error: ' + error);

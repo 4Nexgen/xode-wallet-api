@@ -60,7 +60,7 @@ const ixon: FastifyPluginAsync = async (fastify, opts) => {
     totalSupplyController
   );
   
-  fastify.post<{
+  fastify.get<{
     Querystring: IBalanceOfRequestParams;
     Reply: IResponseSuccessful | IResponseError;
   }>(

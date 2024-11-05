@@ -35,6 +35,7 @@ export const balanceOf = {
                 symbol: { type: 'string' },
                 name: {type: 'string' },
                 price: { type: 'string' },
+                image: { type: 'string' },
             },
         },
         // Response schema for unspecified code
