@@ -17,7 +17,7 @@ import IXONRepository from './IXONRepository';
 
 export default class ChainRepository {
   ownerSeed = process.env.ASTROCHIBBI_SEED as string;
-  xonPrice = '10';
+  xonPrice = '0';
   xonImage = 'https://bafkreia5hy2nh46tarcpqybz37mey3lkhoyyxw4qecs7bxw22d4nftz4nm.ipfs.w3s.link/';
   abi = require("./../smartcontracts/astrochibbi/astro_nft.json");
 

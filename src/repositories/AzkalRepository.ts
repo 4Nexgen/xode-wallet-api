@@ -12,7 +12,7 @@ import { Keyring } from '@polkadot/api';
 export default class AzkalRepository {
   assetId = process.env.AZK_ASSET_ID as string ?? '3';
   ownerSeed = process.env.AZK_SEED as string;
-  azkPrice = '0.000003';
+  azkPrice = '0';
   azkImage = 'https://bafkreigvkyppffmoywmyctdhnjqearugk4laorzjtsyfnanljcwdhzywky.ipfs.w3s.link/';
   // These are required and changeable
   REFTIME: number = 300000000000;
