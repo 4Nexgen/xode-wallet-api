@@ -1,8 +1,8 @@
-// Schema for getting user NFTs
-export const token_prices = {
-    summary: 'Get token prices.',
-    tags: ['Chain'],
-    description: 'Schema for token prices using currency. ',
+// Schema for getting NFTs
+export const balanceOf = {
+    summary: 'Get IXON balance of the account',
+    tags: ['Private XON Token'],
+    description: 'Schema for getting IXON balance of the account.',
     headers: {
         type: 'object',
         properties: {
@@ -15,33 +15,26 @@ export const token_prices = {
           }
         },
     },
-    // Request params schema
+    // Request body schema
     params: {
         type: 'object',
         properties: {
-            currency: { type: 'string' },
+            account: { type: 'string' }
         },
         required: [
-            'currency',
+            'account'
         ],
     },
     // Response schema for success
     response: {
         200: {
-            description: 'Succesful response token prices',
+            description: 'Success response after getting balance.',
             type: 'object',
             properties: {
-                currency: { type: 'string' },
-                prices: { 
-                    type: 'object',
-                    properties: {
-                        XON: { type: 'number' },
-                        AZK: { type: 'number' },
-                        XAV: { type: 'number' },
-                        XGM: { type: 'number' },
-                        IXON: { type: 'number' },
-                    }, 
-                },
+                balance: { type: 'string' },
+                symbol: { type: 'string' },
+                name: {type: 'string' },
+                price: { type: 'string' },
             },
         },
         // Response schema for unspecified code
@@ -54,4 +47,9 @@ export const token_prices = {
             },
         }
     },
+    security: [
+        {
+          "apiKey": []
+        }
+    ]
 };

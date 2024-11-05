@@ -13,6 +13,7 @@ import {
 } from '../schemas/ChainSchemas';
 import abi from '../smartcontracts/xode/transfer_controller.json';
 import axios from 'axios';
+import IXONRepository from './IXONRepository';
 
 export default class ChainRepository {
   ownerSeed = process.env.ASTROCHIBBI_SEED as string;
@@ -42,21 +43,14 @@ export default class ChainRepository {
   }
 
   static async getTokensRepo(api: any, wallet_address: string) {
-    console.log('getSmartContractRepo function was called');
     const instance = new ChainRepository();
-    // var api: any;
     try {
-      // await cryptoWaitReady();
-      // api = await InitializeAPI.apiInitialization();
-      // if (api instanceof Error) {
-      //   return api;
-      // }
       const balance = await api.derive.balances.all(wallet_address);
       const available = balance.availableBalance;
       const chainDecimals = api.registry.chainDecimals[0];
       const tokens = api.registry.chainTokens;
-      const token_name = 'Xode';
-      const free = PolkadotUtility.balanceFormatter(
+      const token_name = 'Xode Native Token';
+      const free = await PolkadotUtility.balanceFormatter(
         chainDecimals,
         tokens,
         available
@@ -71,11 +65,40 @@ export default class ChainRepository {
     } catch (error: any) {
       return Error(error || 'getSmartContractRepo error occurred.');
     } 
-    // finally {
-    //   if (!(api instanceof Error)) {
-    //     await api.disconnect();
-    //   }
-    // }
+  }
+
+  static async getTokenRepo(api: any,wallet_address: string) {
+    const instance = new ChainRepository();
+    try {
+      const balance = await api.derive.balances.all(wallet_address);
+      const available = balance.availableBalance;
+      const chainDecimals = api.registry.chainDecimals[0];
+      const tokens = api.registry.chainTokens;
+      const token_name = 'Xode Native Token';
+      const free = await PolkadotUtility.balanceFormatter(
+        chainDecimals,
+        tokens,
+        available
+      );
+      return {
+        status: 200,
+        messase: "Ok",
+        data: {
+          balance: free,
+          symbol: tokens[0],
+          name: token_name,
+          price: instance.xonPrice,
+          image: instance.xonImage,
+        }
+      }
+    } catch (error: any) {
+      return {
+        status: 500,
+        messase: "Error",
+        data: {errormage: instance.xonImage,
+        }
+      }
+    } 
   }
 
   static async getTokenMetadataRepo() {
@@ -89,13 +112,14 @@ export default class ChainRepository {
         return api;
       }
       const properties = await api.rpc.system.properties();
-      return {
+      let data = {
         name: 'Xode Native Token',
         symbol: properties.toHuman().tokenSymbol[0],
         decimals: properties.toHuman().tokenDecimals[0],
         image: instance.xonImage,
-        price: instance.xonPrice,
-      }
+      };
+      console.log("Xode Native Token",data);
+      return data;
     } catch (error: any) {
       return Error(error || 'getTokenMetadataRepo error occurred.');
     } finally {
@@ -334,16 +358,19 @@ export default class ChainRepository {
     const azk_instance = new AzkalRepository();
     const xav_instance = new XaverRepository();
     const xgm_instance = new XGameRepository();
+    const ixon_instance = new IXONRepository();
     try {
       const xonPrice: number = parseFloat(xon_instance.xonPrice);
       const azkPrice: number = parseFloat(azk_instance.azkPrice);
       const xavPrice: number = parseFloat(xav_instance.xavPrice);
       const xgmPrice: number = parseFloat(xgm_instance.xgmPrice);
+      const ixonPrice: number = parseFloat(ixon_instance.ixonPrice);
       const prices = {
         XON: xonPrice * data.rate,
         AZK: azkPrice * data.rate,
         XAV: xavPrice * data.rate,
-        XGM: xgmPrice * data.rate
+        XGM: xgmPrice * data.rate,
+        IXON: ixonPrice * data.rate
       };
       return { currency: data.currency, prices };
     } catch (error: any) {

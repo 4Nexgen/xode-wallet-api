@@ -1,3 +1,4 @@
+// Wallet module handles wallets data that are stored in database(not blockchain)
 import { FastifyPluginAsync } from 'fastify';
 import {
   storeWalletController,

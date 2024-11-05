@@ -14,6 +14,7 @@ import XGameRepository from '../repositories/XGameRepository';
 import XaverRepository from '../repositories/XaverRepository';
 import InitializeAPI from '../modules/InitializeAPI';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
+import IXONRepository from '../repositories/IXONRepository';
 
 // Get smart contract
 export const getSmartContractController = async (
@@ -71,7 +72,8 @@ export const getTokensController = async (
               AstroRepository.balanceOfRepo(requestParams.wallet_address),
             //   AzkalRepository.balanceOfRepo(api, requestParams.wallet_address),
               XGameRepository.balanceOfRepo(api, requestParams.wallet_address),
-            //   XaverRepository.balanceOfRepo(api, requestParams.wallet_address)
+            //   XaverRepository.balanceOfRepo(api, requestParams.wallet_address),
+              IXONRepository.balanceOfRepo(api, requestParams.wallet_address)
           ]),
           ChainRepository.forexRepo(requestQuery.currency)
       ]);
@@ -103,6 +105,55 @@ export const getTokensController = async (
     }
 };
 
+export const getBalanceController = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  var api: any;
+  try {
+    // WebsocketHeader.handleWebsocket(request);
+    await cryptoWaitReady();
+    api = await InitializeAPI.apiInitialization();
+    if (api instanceof Error) {
+        throw api;
+    }
+    const requestParams = request.params as ITokensRequestParams;
+    const data = await ChainRepository.getTokenRepo(api, requestParams.wallet_address);
+   
+    if(!(data instanceof Error)){
+      if(data.status == 200){
+       console.log("XON", data)
+        return reply.send(data.data);
+      } 
+    }
+
+    reply.status(500).send('Internal Server Error: ' + data.data);
+  } catch (error: any) {
+      reply.status(500).send('Internal Server Error: ' + error);
+  } 
+  finally {
+      if (!(api instanceof Error)) {
+          await api.disconnect();
+      }
+  }
+};
+
+export const tokenXonController = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+      WebsocketHeader.handleWebsocket(request);
+      const tokens = await ChainRepository.getTokenMetadataRepo();
+      if (tokens instanceof Error) {
+          throw tokens;
+      }
+      return reply.send(tokens);
+  } catch (error: any) {
+      reply.status(500).send('Internal Server Error: ' + error);
+  }
+};
+
 export const tokenListController = async (
     request: FastifyRequest,
     reply: FastifyReply
@@ -111,10 +162,11 @@ export const tokenListController = async (
         WebsocketHeader.handleWebsocket(request);
         const tokens = await Promise.all([
             ChainRepository.getTokenMetadataRepo(),
-            AstroRepository.getContractMetadataRepo(),
+            // AstroRepository.getContractMetadataRepo(),
             AzkalRepository.getAssetMetadataRepo(),
             XGameRepository.getAssetMetadataRepo(),
             XaverRepository.getAssetMetadataRepo(),
+            IXONRepository.getAssetMetadataRepo(),
         ])
         if (tokens instanceof Error) {
             throw tokens;
@@ -186,7 +238,6 @@ export const submitExtrinsicController = async (
       reply.status(500).send('Internal Server Error: ' + error);
     }
 };
-
 
 export const getTotalSupplyController = async (
     request: FastifyRequest,

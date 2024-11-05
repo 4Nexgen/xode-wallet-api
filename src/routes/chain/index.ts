@@ -10,6 +10,7 @@ import {
   getCirculatingSupplyController,
   getSupplyController,
   getTokenPricesController,
+  getBalanceController,
 } from '../../controllers/ChainController';
 // import { airdropController } from '../../controllers/AssetController';
 import {
@@ -52,6 +53,15 @@ const chain: FastifyPluginAsync = async (fastify, opts) => {
     '/gettokens/:wallet_address',
     { schema: user_token_balance },
     getTokensController
+  );
+
+  fastify.post<{
+    Querystring: ITokensRequestParams;
+    Reply: IResponseSuccessful | IResponseError;
+  }>(
+    '/tokenXonController/:wallet_address',
+    // { schema: user_token_balance },
+    getBalanceController
   );
 
   fastify.get<{
