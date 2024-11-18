@@ -14,6 +14,7 @@ export interface IReadMarketingWalletsQuery {
 // POST
 export interface ISendTokenFeedbackBody {
 	address: string;
+	feedback_id: number;
 }
 
 // ----- SUCCESS & ERROR -----

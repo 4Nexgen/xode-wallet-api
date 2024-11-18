@@ -150,11 +150,12 @@ export const marketingFeedbackController = async (
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		const body = request.body as ISendTokenFeedbackBody;
-		if (!body || !body.address) {
+		if (!body || !body.address || !body.feedback_id) {
             return reply.badRequest("Invalid request body.");
         }
 		WebsocketHeader.handleWebsocket(request);
-		const result = await MarketingRepository.sendTokenByFeedbackRepo(body);
+		const token = (request.headers.authorization as string).slice(7);
+		const result = await MarketingRepository.sendTokenByFeedbackRepo(body, token);
 		if (result instanceof Error) throw result;
 		return reply.send(result);
 	} catch (error: any) {
