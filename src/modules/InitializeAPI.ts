@@ -4,7 +4,7 @@ import '@polkadot/api-augment';
 export default class InitializeAPI {
     static apiInitialization = async () => {
         try {
-            const wsProvider = new WsProvider(process.env.MAINNET_WS_PROVIDER_ENDPOINT as string, false);
+            const wsProvider = new WsProvider(process.env.WS_PROVIDER_ENDPOINT as string, false);
             wsProvider.connect();
             const timeoutPromise = new Promise((_, reject) => {
               setTimeout(() => {
