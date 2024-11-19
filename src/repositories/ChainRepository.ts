@@ -118,14 +118,9 @@ export default class ChainRepository {
         decimals: properties.toHuman().tokenDecimals[0],
         image: instance.xonImage,
       };
-      console.log("Xode Native Token",data);
       return data;
     } catch (error: any) {
       return Error(error || 'getTokenMetadataRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -157,10 +152,6 @@ export default class ChainRepository {
     } catch (error: any) {
       console.log('tokenTransferRepo: ' + error);
       return Error(error);
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -186,10 +177,6 @@ export default class ChainRepository {
     } catch (error: any) {
       console.log('tokenTransferAllRepo: ' + error);
       return Error(error);
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -208,10 +195,6 @@ export default class ChainRepository {
     } catch (error: any) {
       console.log('submitExtrinsicRepo: ', error);
       return Error(error);
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   };
 
@@ -263,10 +246,6 @@ export default class ChainRepository {
       return;
     } catch (error: any) {
       return Error(error || 'airdropXONRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -292,10 +271,6 @@ export default class ChainRepository {
       return { totalSupply: parsedBalance }
     } catch (error: any) {
       return Error(error || 'getTotalSupplyRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -345,10 +320,6 @@ export default class ChainRepository {
       return { circulatingSupply: circulatingSupply.toFixed(4) };
     } catch (error: any) {
       return Error(error || 'getTotalSupplyRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 

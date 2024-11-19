@@ -45,10 +45,6 @@ export default class EnergyRepository {
       return result;
     } catch (error: any) {
       return Error(error || 'decreaseEnergyRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -162,10 +158,6 @@ export default class EnergyRepository {
       return result;
     } catch (error: any) {
       return Error(error || 'setEnergyImageRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
   
@@ -243,10 +235,6 @@ export default class EnergyRepository {
       return { image_path: energy.ok };
     } catch (error: any) {
       return Error(error || 'getEnergyImageRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 }

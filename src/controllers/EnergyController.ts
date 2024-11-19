@@ -53,10 +53,6 @@ export const decreaseEnergyController = async (
     return reply.send(result);
   } catch (error: any) {
     reply.status(500).send('Internal Server Error: ' + error);
-  } finally {
-    if (!(api instanceof Error)) {
-      await api.disconnect();
-    }
   }
 };
 
@@ -112,10 +108,6 @@ export const getEnergyController = async (
     }
   } catch (error: any) {
     reply.status(500).send('Internal Server Error: ' + error);
-  } finally {
-    if (!(api instanceof Error)) {
-      await api.disconnect();
-    }
   }
 };
 

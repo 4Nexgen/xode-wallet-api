@@ -119,10 +119,6 @@ export default class AstroChibbiRepository {
           return result;
         } catch (error: any) {
           return Error(error || 'updateNFTRepo error occurred.');
-        } finally {
-          if (api) {
-            await api.disconnect();
-          }
         }
     }
 
@@ -158,10 +154,6 @@ export default class AstroChibbiRepository {
           return result;
         } catch (error: any) {
           return Error(error || 'transferNFTFromWithoutApprovalRepo error occurred.');
-        } finally {
-          if (api) {
-            await api.disconnect();
-          }
         }
     }
 
@@ -188,10 +180,6 @@ export default class AstroChibbiRepository {
         }
       } catch (error: any) {
         throw Error(error || 'getMarketplaceNftsByCollectionIdRepo error occurred.');
-      } finally {
-        if (!(api instanceof Error)) {
-          await api.disconnect();
-        }
       }
   }
   
@@ -223,6 +211,7 @@ export default class AstroChibbiRepository {
           [player_wallet_address],
           instance
         );
+		console.log(result)
         const rarityMapping: Record<string, string> = {
           "0": "Normal",
           "1": "Rare",
@@ -315,10 +304,6 @@ export default class AstroChibbiRepository {
         }
       } catch (error: any) {
         return Error(error || 'getNFTByIdRepo error occurred.');
-      } finally {
-        if (!(api instanceof Error)) {
-          await api.disconnect();
-        }
       }
     }
 
@@ -346,10 +331,6 @@ export default class AstroChibbiRepository {
         return result;
       } catch (error: any) {
         return Error(error || 'balanceTransferRepo error occurred.');
-      } finally {
-        if (!(api instanceof Error)) {
-          await api.disconnect();
-        }
       }
     }
 }

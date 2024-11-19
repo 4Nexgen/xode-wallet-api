@@ -47,10 +47,6 @@ export default class XaverRepository {
       return result;
     } catch (error: any) {
       return Error(error || 'mintRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -88,10 +84,6 @@ export default class XaverRepository {
       return { hash: result.toHex() };
     } catch (error: any) {
       return Error(error || 'transferRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -126,10 +118,6 @@ export default class XaverRepository {
       return result;
     } catch (error: any) {
       return Error(error || 'burnRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -204,10 +192,6 @@ export default class XaverRepository {
       };
     } catch (error: any) {
       return Error(error || 'totalSupplyRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -230,10 +214,6 @@ export default class XaverRepository {
       }
     } catch (error: any) {
       return Error(error || 'getAssetMetadataRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 }

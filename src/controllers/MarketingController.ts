@@ -20,16 +20,17 @@ export const manualController = async (
 	try {
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
+		const token = (request.headers.authorization as string).slice(7);
 		const query = request.query as { start: string, end: string };
 		if (!query || !query.start || !query.end) return reply.badRequest('Missing or invalid query.');
 		WebsocketHeader.handleWebsocket(request);
-		let account = await getAccountData(Number(query.start), Number(query.end));
+		let account = await getAccountData(token, Number(query.start), Number(query.end));
 		if (account instanceof Error) throw account;
 		account = Array.from(new Set(account));
 		if (Array.isArray(account) && account.length <= 0) {
 			return reply.send({ count: account.length });
 		}
-		const result = await MarketingRepository.sendTokenRepo(account);
+		const result = await MarketingRepository.sendTokenRepo(account, token);
 		if (result instanceof Error) throw result;
 		return reply.send({ count: account.length });
 	} catch (error: any) {
@@ -44,13 +45,14 @@ export const startController = async (
 	try {
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
+		const token = (request.headers.authorization as string).slice(7);
 		WebsocketHeader.handleWebsocket(request);
 		if (!job) {
 			job = cron.schedule('0 * * * *', async () => { // 0 * * * * call every hour
 				const now = Date.now();
 				console.log(`${now}: Running a task`)
 				const startTimestamp = lastEndTimestamp;
-				let account = await getAccountData(startTimestamp, now);
+				let account = await getAccountData(token, startTimestamp, now);
 				if (account instanceof Error) {
 					job.stop();
 					isJobRunning = false;
@@ -58,7 +60,7 @@ export const startController = async (
 				}
 				account = Array.from(new Set(account));
 				if (account.length > 0) {
-					const result = await MarketingRepository.sendTokenRepo(account);
+					const result = await MarketingRepository.sendTokenRepo(account, token);
 					if (result instanceof Error) {
 						job.stop();
 						isJobRunning = false;

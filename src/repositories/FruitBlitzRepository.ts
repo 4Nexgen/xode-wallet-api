@@ -55,10 +55,6 @@ export default class FruitBlitzRepository {
         return result;
       } catch (error: any) {
         return Error(error || 'mintRepo error occurred.');
-      } finally {
-        if (api) {
-          await api.disconnect();
-        }
       }
   }
 
@@ -101,10 +97,6 @@ export default class FruitBlitzRepository {
           return result;
         } catch (error: any) {
           return Error(error || 'updateNFTRepo error occurred.');
-        } finally {
-          if (api) {
-            await api.disconnect();
-          }
         }
     }
 
@@ -131,10 +123,6 @@ export default class FruitBlitzRepository {
         }
       } catch (error: any) {
         throw Error(error || 'getMarketplaceNftsByCollectionIdRepo error occurred.');
-      } finally {
-        if (!(api instanceof Error)) {
-          await api.disconnect();
-        }
       }
     }
 
@@ -201,10 +189,6 @@ export default class FruitBlitzRepository {
         return result;
       } catch (error: any) {
         return Error(error || 'getNFTByIdRepo error occurred.');
-      } finally {
-        if (!(api instanceof Error)) {
-          await api.disconnect();
-        }
       }
     }
 }

@@ -23,14 +23,23 @@ interface FeedbackResponse {
   	status: String;
 }
 
-export async function getAccountData(start?: number, end?: number): Promise<string[] | Error> {
+export async function getAccountData(
+	token: string,
+	start?: number,
+	end?: number
+): Promise<string[] | Error> {
     try {
 		const params: { start?: number; end?: number } = {};
-        if (start) params.start = start;
-        if (end) params.end = end;
+        if (start !== undefined) params.start = start;
+        if (end !== undefined) params.end = end;
         const response = await axios.get<{ data: WalletResponse[] }>(
 			`${BASE_URL}/auth/getWalletAddress`,
-			{ params }
+			{
+				params,
+				headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+			}
 		);
         return response.data.data.map((account) => account.wallet_address);
     } catch (error: any) {
@@ -38,11 +47,19 @@ export async function getAccountData(start?: number, end?: number): Promise<stri
     }
 }
 
-export async function updateAccountData(wallet: string): Promise<UpdateResponse | Error> {
+export async function updateAccountData(
+	wallet: string,
+	token: string
+): Promise<UpdateResponse | Error> {
     try {
         const response = await axios.put<{ data: UpdateResponse }>(
 			`${BASE_URL}/auth/updateWallet/${wallet}`,
-			{ did_receive: true }
+			{ did_receive: true },
+			{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
 		);
         return response.data.data;
     } catch (error: any) {
@@ -50,7 +67,10 @@ export async function updateAccountData(wallet: string): Promise<UpdateResponse 
     }
 }
 
-export async function getFeedbackData(id: string, token: string): Promise<FeedbackResponse | Error> {
+export async function getFeedbackData(
+	id: string,
+	token: string
+): Promise<FeedbackResponse | Error> {
     try {
         const response = await axios.get<{ data: FeedbackResponse }>(
             `${BASE_URL}/feed_back/getFeedBack/${id}`,

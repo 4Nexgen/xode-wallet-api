@@ -98,10 +98,6 @@ export const getTokensController = async (
       });
     } catch (error: any) {
         reply.status(500).send('Internal Server Error: ' + error);
-    } finally {
-        if (!(api instanceof Error)) {
-            await api.disconnect();
-        }
     }
 };
 
@@ -131,11 +127,6 @@ export const getBalanceController = async (
   } catch (error: any) {
       reply.status(500).send('Internal Server Error: ' + error);
   } 
-  finally {
-      if (!(api instanceof Error)) {
-          await api.disconnect();
-      }
-  }
 };
 
 export const tokenXonController = async (

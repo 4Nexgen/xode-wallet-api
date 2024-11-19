@@ -15,9 +15,6 @@ export default class WebsocketHeader {
             }
             
             const mainnetEnv = process.env.MAINNET_WS_PROVIDER_ENDPOINT as string;
-            const testnetEnv = process.env.TESTNET_WS_PROVIDER_ENDPOINT as string;
-            const devnetEnv = process.env.DEVNET_WS_PROVIDER_ENDPOINT as string;
-            const localEnv = process.env.LOCAL_WS_PROVIDER_ENDPOINT as string;
 
             process.env.WS_PROVIDER_ENDPOINT = websocket;
             if (websocket === mainnetEnv || websocket.includes('n7yoxCmcIrCF6VziCcDmYTwL8R03a')) {
@@ -30,25 +27,7 @@ export default class WebsocketHeader {
                     process.env.MAINNET_BLITZ_ECONOMY_ADDRESS as string,
                     process.env.MAINNET_BLITZ_ENERGY_ADDRESS as string,
                 );
-            } else if (websocket === devnetEnv) {
-                this.setEnvAddresses(
-                    process.env.DEVNET_ASTROCHIBBI_ADDRESS as string,
-                    process.env.DEVNET_ASTRO_ECONOMY_ADDRESS as string,
-                    process.env.DEVNET_ASTRO_ENERGY_ADDRESS as string,
-                    process.env.DEVNET_FRUITBLITZ_ADDRESS as string,
-                    process.env.DEVNET_BLITZ_ECONOMY_ADDRESS as string,
-                    process.env.DEVNET_BLITZ_ENERGY_ADDRESS as string,
-                );
-            } else if (websocket === localEnv) {
-                this.setEnvAddresses(
-                    process.env.LOCAL_ASTROCHIBBI_ADDRESS as string,
-                    process.env.LOCAL_ASTRO_ECONOMY_ADDRESS as string,
-                    process.env.LOCAL_ASTRO_ENERGY_ADDRESS as string,
-                    process.env.LOCAL_FRUITBLITZ_ADDRESS as string,
-                    process.env.LOCAL_BLITZ_ECONOMY_ADDRESS as string,
-                    process.env.LOCAL_BLITZ_ENERGY_ADDRESS as string,
-                );
-            } else if (websocket === testnetEnv || websocket.includes('aRoyklGrhl9m2LlhX8NP')) {
+            } else {
                 process.env.TRANSFER_ADDRESS = '5GEWpoRwekYSSohumnMrWnnPf4EFhCFQ4nnk4sJzroJRwbY8'
                 this.defaultWebsocket();
             }

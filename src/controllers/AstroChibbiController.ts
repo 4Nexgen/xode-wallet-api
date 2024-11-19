@@ -138,10 +138,6 @@ export const getUserNftsHandler = async (
         return reply.send(updatedImages);
     } catch (error: any) {
         reply.status(500).send('Internal Server Error: ' + error);
-    } finally {
-        if (!(api instanceof Error)) {
-            await api.disconnect();
-        }
     }
 };
 
@@ -260,10 +256,6 @@ export const dashboardNftHandler = async (
         return reply.send(updatedImages);
     } catch (error: any) {
         reply.status(500).send('Internal Server Error: ' + error);
-    } finally {
-        if (!(api instanceof Error)) {
-            await api.disconnect();
-        }
     }
 };
 
