@@ -1,13 +1,12 @@
 import TXRepository from '../modules/TXRepository';
-import InitializeAPI from '../modules/InitializeAPI';
 import PolkadotUtility from '../modules/PolkadotUtility';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { 
   IMintRequestBody,
   ITransferRequestBody,
   IBurnRequestBody,
 } from '../schemas/AssetSchemas';
 import { Keyring } from '@polkadot/api';
+import { api } from '../modules/InitializeAPI';
 
 export default class AzkalRepository {
   assetId = process.env.AZK_ASSET_ID as string ?? '3';
@@ -21,13 +20,7 @@ export default class AzkalRepository {
   static async mintRepo(data: IMintRequestBody) {
     console.log('mintRepo function was called');
     const instance = new AzkalRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const metadata: any = await api.query.assets.metadata(
         instance.assetId,
       );
@@ -37,7 +30,6 @@ export default class AzkalRepository {
       const { decimals } = metadata.toJSON();
       const value = data.value * 10 ** decimals;
       const result = TXRepository.constructChainExtrinsicTransaction(
-        api,
         'assets',
         'mint',
         [
@@ -55,13 +47,7 @@ export default class AzkalRepository {
   static async transferRepo(data: ITransferRequestBody) {
     console.log('transferRepo function was called');
     const instance = new AzkalRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const metadata: any = await api.query.assets.metadata(
         instance.assetId,
       );
@@ -70,8 +56,7 @@ export default class AzkalRepository {
       }
       const { decimals } = metadata.toJSON();
       const value = data.value * 10 ** decimals;
-      const result = await TXRepository.constructChainExtrinsicTransaction(
-        api,
+      const result = TXRepository.constructChainExtrinsicTransaction(
         'assets',
         'transfer',
         [
@@ -80,9 +65,7 @@ export default class AzkalRepository {
           value
         ]
       );
-      if (result instanceof Error) {
-        return result;
-      }
+      if (result instanceof Error) return result;
       return { hash: result.toHex() };
     } catch (error: any) {
       return Error(error || 'transferRepo error occurred.');
@@ -92,13 +75,7 @@ export default class AzkalRepository {
   static async burnRepo(data: IBurnRequestBody) {
     console.log('burnRepo function was called');
     const instance = new AzkalRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const metadata: any = await api.query.assets.metadata(
         instance.assetId,
       );
@@ -107,8 +84,7 @@ export default class AzkalRepository {
       }
       const { decimals } = metadata.toJSON();
       const value = data.value * 10 ** decimals;
-      const result = await TXRepository.constructChainExtrinsicTransaction(
-        api,
+      const result = TXRepository.constructChainExtrinsicTransaction(
         'assets',
         'burn',
         [
@@ -123,28 +99,25 @@ export default class AzkalRepository {
     }
   }
 
-  static async balanceOfRepo(api: any, account: string) {
+  static async balanceOfRepo(account: string) {
     console.log('balanceOfRepo function was called');
     const instance = new AzkalRepository();
-    // var api: any;
     try {
-      // await cryptoWaitReady();
-      // api = await InitializeAPI.apiInitialization();
-      // if (api instanceof Error) {
-      //   return api;
-      // }
       const [accountInfo, metadata] = await Promise.all([
         api.query.assets.account(instance.assetId, account),
         api.query.assets.metadata(instance.assetId)
       ]);
       if (accountInfo.toHuman() != null) {
-        const { balance } = accountInfo.toHuman();
-        const { decimals, symbol, name } = metadata.toHuman();
-        const bigintbalance = BigInt(balance.replace(/,/g, ''));
+        const { balance } = accountInfo.unwrap();
+        const { decimals, symbol, name } = metadata.toJSON() as {
+			decimals: string;
+			symbol: string;
+			name: string;
+		};
         const balances = PolkadotUtility.balanceFormatter(
           parseInt(decimals),
           [symbol],
-          bigintbalance
+          balance
         );
         return {
           balance: balances,
@@ -165,23 +138,12 @@ export default class AzkalRepository {
     } catch (error: any) {
       return Error(error || 'balanceOfRepo error occurred.');
     } 
-    // finally {
-    //   if (!(api instanceof Error)) {
-    //     await api.disconnect();
-    //   }
-    // }
   }
   
   static async totalSupplyRepo() {
     console.log('totalSupplyRepo function was called');
     const instance = new AzkalRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const assetInfo: any = await api.query.assets.asset(
         instance.assetId
       );
@@ -200,12 +162,7 @@ export default class AzkalRepository {
   static async getAssetMetadataRepo() {
     console.log('getAssetMetadataRepo function was called');
     const instance = new AzkalRepository();
-    var api: any;
     try {
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const metadata = await api.query.assets.metadata(instance.assetId);
       return {
         name: metadata.toHuman().name,
@@ -222,13 +179,7 @@ export default class AzkalRepository {
   static async airdropAZKRepo(data: any) {
     console.log('airdropAZKRepo function was called');
     const instance = new AzkalRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const metadata: any = await api.query.assets.metadata(
         instance.assetId,
       );

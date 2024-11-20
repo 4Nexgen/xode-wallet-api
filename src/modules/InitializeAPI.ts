@@ -4,22 +4,25 @@ import '@polkadot/api-augment';
 let api_mainnet: ApiPromise;
 let api_testnet: ApiPromise;
 
+export let api: ApiPromise;
 export default class InitializeAPI {
     static apiInitialization = async () => {
         try {
 			const rpc_endpoint = process.env.WS_PROVIDER_ENDPOINT as string;
 			if (rpc_endpoint.includes('n7yoxCmcIrCF6VziCcDmYTwL8R03a')) {
 				if (!api_mainnet) {
-					const api = await this.create_api(rpc_endpoint);
-					return api instanceof Error ? api : api_mainnet = api;
+					const client = await this.create_api(rpc_endpoint);
+					if (client instanceof Error) return client;
+					api_mainnet = client;
 				}
-				return api_mainnet;
+				api = api_mainnet;
 			} else {
 				if (!api_testnet) {
-					const api = await this.create_api(rpc_endpoint);
-					return api instanceof Error ? api : api_testnet = api;
+					const client = await this.create_api(rpc_endpoint);
+					if (client instanceof Error) return client;
+					api_testnet = client;
 				}
-				return api_testnet;
+				api = api_testnet;
 			}
         } catch (error: any) {
             return Error('apiInitialization error occurred: ' + error);

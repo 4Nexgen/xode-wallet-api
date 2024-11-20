@@ -16,7 +16,7 @@ export default class WebsocketHeader {
             
             const mainnetEnv = process.env.MAINNET_WS_PROVIDER_ENDPOINT as string;
 
-            process.env.WS_PROVIDER_ENDPOINT = websocket;
+			process.env.WS_PROVIDER_ENDPOINT = 'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc';
             if (websocket === mainnetEnv || websocket.includes('n7yoxCmcIrCF6VziCcDmYTwL8R03a')) {
                 process.env.TRANSFER_ADDRESS = '5Hk3W88P8nP5tXTGZbvuwWcgj9vLk2kUrroaNfbq6nch7Yju'
                 this.setEnvAddresses(
@@ -38,7 +38,7 @@ export default class WebsocketHeader {
 
     static defaultWebsocket = async () => {
         try {
-            process.env.WS_PROVIDER_ENDPOINT = process.env.TESTNET_WS_PROVIDER_ENDPOINT;
+			process.env.WS_PROVIDER_ENDPOINT = 'wss://rpc1.paseo.popnetwork.xyz';
             this.setEnvAddresses(
                 process.env.TESTNET_ASTROCHIBBI_ADDRESS as string,
                 process.env.TESTNET_ASTRO_ECONOMY_ADDRESS as string,

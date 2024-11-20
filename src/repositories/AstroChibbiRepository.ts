@@ -4,11 +4,10 @@ import {
     IBalanceTransferRequestBody
 } from '../schemas/NFTSchemas';
 import TXRepository from '../modules/TXRepository';
-import InitializeAPI from '../modules/InitializeAPI';
 import { Keyring } from '@polkadot/api';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import abi from '../smartcontracts/astrochibbi/astro_nft.json';
 import NFT from '../models/nft';
+import { api } from '../modules/InitializeAPI';
 
 export default class AstroChibbiRepository {
     contractAddress = process.env.ASTROCHIBBI_ADDRESS as string;
@@ -80,15 +79,9 @@ export default class AstroChibbiRepository {
     static async updateNFTRepo(nftData: IUpdateNFTRequestBody, id: number) {
         console.log('updateNFTRepo function was called');
         const instance = new AstroChibbiRepository();
-        var api: any;
         try {
-          await cryptoWaitReady();
-          api = await InitializeAPI.apiInitialization();
-          if (api instanceof Error) {
-            return api;
-          }
           const contractAddress = instance.contractAddress;
-          const contract = await TXRepository.getContract(api, abi, contractAddress);
+          const contract = TXRepository.getContract(abi, contractAddress);
           const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
           const owner = keyring.addFromUri(instance.ownerSeed);
           const storageDepositLimit = null;
@@ -96,7 +89,6 @@ export default class AstroChibbiRepository {
             return Error('Contract undefined');
           }
           const result = await TXRepository.sendContractTransaction(
-            api,
             contract,
             'updateToken',
             owner,
@@ -127,15 +119,9 @@ export default class AstroChibbiRepository {
       ) => {
         console.log('transferNFTFromWithoutApprovalRepo function was called');
         const instance = new AstroChibbiRepository();
-        var api: any;
         try {
-          await cryptoWaitReady();
-          api = await InitializeAPI.apiInitialization();
-          if (api instanceof Error) {
-            return api;
-          }
           const contractAddress = instance.contractAddress;
-          const contract = await TXRepository.getContract(api, abi, contractAddress);
+          const contract = TXRepository.getContract(abi, contractAddress);
           const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
           const owner = keyring.addFromUri(instance.ownerSeed);
           const storageDepositLimit = null;
@@ -143,7 +129,6 @@ export default class AstroChibbiRepository {
             return Error('Contract undefined');
           }
           const result = await TXRepository.sendContractTransaction(
-            api,
             contract,
             'transferFromWithoutApproval',
             owner,
@@ -160,17 +145,10 @@ export default class AstroChibbiRepository {
     static async getMarketplaceNftsByCollectionIdRepo(data: any) {
       console.log('getMarketplaceNftsByCollectionIdRepo function was called');
       const instance = new AstroChibbiRepository();
-      var api: any;
       try {
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-    if (api instanceof Error) {
-      return api;
-    }
-        const contract = await TXRepository.getContract(api, abi, instance.contractAddress);
+        const contract = TXRepository.getContract(abi, instance.contractAddress);
         if (contract !== undefined) {
           const nft = await TXRepository.sendContractQuery(
-            api,
             contract,
             'getMarketplaceNftsByCollection',
             [data.collection_id],
@@ -183,17 +161,11 @@ export default class AstroChibbiRepository {
       }
   }
   
-  static async getUserNFTRepo(api: any, wallet_address: string) {
+  static async getUserNFTRepo(wallet_address: string) {
       console.log('getUserNFTRepo function was called');
       const instance = new AstroChibbiRepository();
-      // var api: any;
       try {
-        // await cryptoWaitReady();
-        // api = await InitializeAPI.apiInitialization();
-        // if (api instanceof Error) {
-        //   return api;
-        // }
-        const contract = await TXRepository.getContract(api, abi, instance.contractAddress);
+        const contract = TXRepository.getContract(abi, instance.contractAddress);
         const player_wallet_address = wallet_address;
     
         if (!contract) {
@@ -205,7 +177,6 @@ export default class AstroChibbiRepository {
         }
     
         const result = await TXRepository.sendContractQuery(
-          api,
           contract,
           'getUserNft',
           [player_wallet_address],
@@ -250,24 +221,13 @@ export default class AstroChibbiRepository {
         console.log('getUserNFTRepo: ', error);
         return Error(error);
       } 
-      // finally {
-      //   if (!(api instanceof Error)) {
-      //     await api.disconnect();
-      //   }
-      // }
   }
   
   static async getNFTByIdRepo(token_id: string) {
       console.log('getNFTByIdRepo function was called');
       const instance = new AstroChibbiRepository();
-      var api: any;
       try {
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-        if (api instanceof Error) {
-          return api;
-        }
-        const contract = await TXRepository.getContract(api, abi, instance.contractAddress);
+        const contract = TXRepository.getContract(abi, instance.contractAddress);
         const tokenId = token_id;
     
         if (!contract) {
@@ -279,7 +239,6 @@ export default class AstroChibbiRepository {
         }
     
         const result = await TXRepository.sendContractQuery(
-          api,
           contract,
           'getNftById',
           [tokenId],
@@ -310,19 +269,12 @@ export default class AstroChibbiRepository {
     static async balanceTransferRepo(data: IBalanceTransferRequestBody) {
       console.log('balanceTransferRepo function was called');
       const instance = new AstroChibbiRepository();
-      var api: any;
       try {
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-        if (api instanceof Error) {
-          return api;
-        }
         const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
         const chainDecimals = api.registry.chainDecimals[0];
         const value = data.amount * 10 ** chainDecimals;
         const owner = keyring.addFromUri(instance.ownerSeed);
         const result = await TXRepository.sendApiTransaction(
-          api,
           'balances',
           'forceTransfer',
           owner,

@@ -6,21 +6,13 @@ import {
 } from '../schemas/EnergySchemas';
 import EnergyRepository from '../repositories/EnergyRepository';
 import WebsocketHeader from '../modules/WebsocketHeader';
-import InitializeAPI from '../modules/InitializeAPI';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 export const decreaseEnergyController = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  var api: any;
   try {
     WebsocketHeader.handleWebsocket(request);
-    await cryptoWaitReady();
-    api = await InitializeAPI.apiInitialization();
-    if (api instanceof Error) {
-      throw api;
-    }
     const requestBody = request.body as IDecreaseEnergyRequestBody;
     if (
       !requestBody || 
@@ -36,7 +28,7 @@ export const decreaseEnergyController = async (
         if (success instanceof Error) {
           reject(success);
         } else {
-          const updatedEnergy = await EnergyRepository.getEnergyRepo(api, requestBody.owner);
+          const updatedEnergy = await EnergyRepository.getEnergyRepo(requestBody.owner);
           if (updatedEnergy instanceof Error) {
             reject(updatedEnergy);
           } else {
@@ -60,20 +52,14 @@ export const getEnergyController = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  var api: any;
   try {
     WebsocketHeader.handleWebsocket(request);
-    await cryptoWaitReady();
-    api = await InitializeAPI.apiInitialization();
-    if (api instanceof Error) {
-      throw api;
-    }
     const requestBody = request.body as IGetEnergyRequestBody;
     if (!requestBody || !requestBody.wallet_address) {
       return reply.badRequest("Missing or invalid request body.");
     }
 
-    const energyResult = await EnergyRepository.getEnergyRepo(api, requestBody.wallet_address);
+    const energyResult = await EnergyRepository.getEnergyRepo(requestBody.wallet_address);
     if (energyResult instanceof Error) {
       throw energyResult;
     }
@@ -83,22 +69,22 @@ export const getEnergyController = async (
         energy: 20
       };
       const result = await new Promise(async (resolve, reject) => {
-        const setEnergyResult: any = await EnergyRepository.setEnergyRepo(api, data);
+        const setEnergyResult: any = await EnergyRepository.setEnergyRepo(data);
         if (setEnergyResult instanceof Error) {
           reject(setEnergyResult);
         } else {
-          resolve(await EnergyRepository.getEnergyRepo(api, requestBody.wallet_address));
+          resolve(await EnergyRepository.getEnergyRepo(requestBody.wallet_address));
         }
       });
       return await reply.send(result);
     } else {
       const result = await new Promise(async (resolve, reject) => {
         if (energyResult.resetable) {
-          const setEnergyResult: any = await EnergyRepository.resetEnergyRepo(api, requestBody.wallet_address);
+          const setEnergyResult: any = await EnergyRepository.resetEnergyRepo(requestBody.wallet_address);
           if (setEnergyResult instanceof Error) {
             reject(setEnergyResult);
           } else {
-            resolve(await EnergyRepository.getEnergyRepo(api, requestBody.wallet_address));
+            resolve(await EnergyRepository.getEnergyRepo(requestBody.wallet_address));
           }
         } else {
           resolve(energyResult);

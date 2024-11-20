@@ -12,8 +12,6 @@ import AstroChibbiRepository from '../repositories/AstroChibbiRepository';
 // import FruitBlitzRepository from '../repositories/FruitBlitzRepository';
 import WebsocketHeader from '../modules/WebsocketHeader';
 import EnergyRepository from '../repositories/EnergyRepository';
-import InitializeAPI from '../modules/InitializeAPI';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 export const updateNFTHandler = async (
     request: FastifyRequest,
@@ -113,19 +111,13 @@ export const getUserNftsHandler = async (
     request: FastifyRequest,
     reply: FastifyReply
 ) => {
-    var api: any;
     try {
         WebsocketHeader.handleWebsocket(request);
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-        if (api instanceof Error) {
-            throw api;
-        }
         const requestParams = request.params as IGetUserNFTRequestParams;
         if (!requestParams || !requestParams.wallet_address) {
             return reply.badRequest("Invalid request parameters. Required parameter: wallet address");
         }
-        const nfts: any = await AstroChibbiRepository.getUserNFTRepo(api, requestParams.wallet_address);
+        const nfts: any = await AstroChibbiRepository.getUserNFTRepo(requestParams.wallet_address);
         if (nfts instanceof Error) {
             throw nfts;
         }
@@ -173,22 +165,16 @@ export const dashboardNftHandler = async (
     request: FastifyRequest,
     reply: FastifyReply
 ) => {
-    var api: any;
     try {
         WebsocketHeader.handleWebsocket(request);
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-        if (api instanceof Error) {
-            throw api;
-        }
         const requestParams = request.params as IGetUserNFTRequestParams;
         if (!requestParams || !requestParams.wallet_address) {
             return reply.badRequest("Invalid request parameters. Required parameter: wallet address");
         }
         const [astro, energy] = await Promise.all([
-            AstroChibbiRepository.getUserNFTRepo(api, requestParams.wallet_address),
+            AstroChibbiRepository.getUserNFTRepo(requestParams.wallet_address),
             // FruitBlitzRepository.getUserNFTRepo(api, requestParams.wallet_address),
-            EnergyRepository.getEnergyRepo(api, requestParams.wallet_address),
+            EnergyRepository.getEnergyRepo(requestParams.wallet_address),
         ]);
         if (astro instanceof Error || energy instanceof Error) {
             throw astro || energy;
@@ -205,22 +191,22 @@ export const dashboardNftHandler = async (
                     owner: requestParams.wallet_address,
                     energy: 20,
                 };
-                const setEnergyResult = await EnergyRepository.setEnergyRepo(api, data);
+                const setEnergyResult = await EnergyRepository.setEnergyRepo(data);
                 if (setEnergyResult instanceof Error) {
                     throw setEnergyResult;
                 }
-                result = await EnergyRepository.getEnergyRepo(api, requestParams.wallet_address);
+                result = await EnergyRepository.getEnergyRepo(requestParams.wallet_address);
                 if (result instanceof Error) {
                     throw result;
                 }
             } else {
                 result = energy;
                 if (result.resetable) {
-                    const resetEnergyResult = await EnergyRepository.resetEnergyRepo(api, requestParams.wallet_address);
+                    const resetEnergyResult = await EnergyRepository.resetEnergyRepo(requestParams.wallet_address);
                     if (resetEnergyResult instanceof Error) {
                         throw resetEnergyResult;
                     }
-                    result = await EnergyRepository.getEnergyRepo(api, requestParams.wallet_address);
+                    result = await EnergyRepository.getEnergyRepo(requestParams.wallet_address);
                     if (result instanceof Error) {
                         throw result;
                     }

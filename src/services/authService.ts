@@ -1,4 +1,4 @@
-import { cryptoWaitReady, signatureVerify } from '@polkadot/util-crypto';
+import { signatureVerify } from '@polkadot/util-crypto';
 import { Keyring } from '@polkadot/keyring';
 import { FastifyRequest } from 'fastify';
 import CryptoJS from 'crypto-js';
@@ -7,7 +7,6 @@ export async function marketingAuth(
 	request: FastifyRequest,
 ): Promise<boolean | Error> {
     try {
-		await cryptoWaitReady();
 		const tokenHeader = request.headers.token as string;
 		const token_key = process.env.TOKEN_KEY as string;
 		const seed = process.env.MARKETING_SEED as string;

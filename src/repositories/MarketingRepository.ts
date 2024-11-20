@@ -1,5 +1,3 @@
-import InitializeAPI from '../modules/InitializeAPI';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Keyring } from '@polkadot/api';
 import { updateAccountData, getFeedbackData } from '../services/accountService';
 import prisma from '../db';
@@ -9,6 +7,7 @@ import {
 	IReadMarketingWalletsQuery,
 	ISendTokenFeedbackBody
 } from '../schemas/MarketingSchemas';
+import { api } from '../modules/InitializeAPI';
 
 export default class MarketingRepository {
 	ownerSeed = process.env.MARKETING_SEED as string;
@@ -16,13 +15,7 @@ export default class MarketingRepository {
 	static async sendTokenRepo(data: string[], token: string) {
 		console.log('sendTokenRepo function was called');
 		const instance = new MarketingRepository();
-		var api: any;
 		try {
-			await cryptoWaitReady();
-			api = await InitializeAPI.apiInitialization();
-			if (api instanceof Error) {
-				return api;
-			}
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
@@ -67,13 +60,7 @@ export default class MarketingRepository {
 	static async sendTokenByFeedbackRepo(data: ISendTokenFeedbackBody, token: string) {
 		console.log('sendTokenByFeedbackRepo function was called');
 		const instance = new MarketingRepository();
-		var api: any;
 		try {
-			await cryptoWaitReady();
-			api = await InitializeAPI.apiInitialization();
-			if (api instanceof Error) {
-				return api;
-			}
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
