@@ -107,20 +107,16 @@ export default class XaverRepository {
       ]);
       if (accountInfo.toHuman() != null) {
         const { balance } = accountInfo.unwrap();
-        const { decimals, symbol, name } = metadata.toJSON() as {
-			decimals: string;
-			symbol: string;
-			name: string;
-		};
+        const { decimals, symbol, name } = metadata;
         const balances = PolkadotUtility.balanceFormatter(
-          parseInt(decimals),
-          [symbol],
+          decimals.toNumber(),
+          [symbol.toHuman()],
           balance
         );
         return {
           balance: balances,
-          symbol: symbol,
-          name: name,
+          symbol: symbol.toHuman(),
+          name: name.toHuman(),
           price: instance.xavPrice,
           image: instance.xavImage,
         };
