@@ -17,5 +17,5 @@ services:
     container_name: copy-xode-wallet-env
     platform: linux/amd64
     volumes:
-      - /var/oress/xode-wallet-api/.env:/temp/.env
+      - /var/www/xgame-apis-xode-wallet-api/.env:/temp/.env
     command: sh -c "cp /temp/.env /app/.env && exit"
