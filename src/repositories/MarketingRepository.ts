@@ -8,39 +8,41 @@ import {
 	ISendTokenFeedbackBody
 } from '../schemas/MarketingSchemas';
 import { api } from '../modules/InitializeAPI';
+import { WalletResponse } from '../services/accountService';
 
 export default class MarketingRepository {
 	ownerSeed = process.env.MARKETING_SEED as string;
 
-	static async sendTokenRepo(data: string[], token: string) {
+	static async sendTokenRepo(data: WalletResponse[], token: string) {
 		console.log('sendTokenRepo function was called');
 		const instance = new MarketingRepository();
 		try {
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
-			const value = 1 * 10 ** chainDecimals;
+			const value = 0.00001 * 10 ** chainDecimals;
 			let nonce = await api.rpc.system.accountNextIndex(owner.address);
 			let index = 0;
 			while (index < data.length) {
 				const batch = data.slice(index, index + 1);
-				for (const address of batch) {
-					console.log(`Index: ${index} - `, address);
+				for (const account of batch) {
+					console.log(`Index: ${index} - `, account.wallet_address);
 					const tx = api.tx.balances.transferKeepAlive(
-						address,
+						account.wallet_address,
 						value
 					);
 					const [info, result, wallet] = await Promise.all([
 						tx.paymentInfo(owner),
 						tx.signAndSend(owner, { nonce }),
-						updateAccountData(address, token)
+						updateAccountData(account.wallet_address, token)
 					]);
 					const unitFactor = 10 ** 12
 					const partialFee  = info.partialFee.toString();
 					const fee = parseFloat(partialFee) / unitFactor;
 					const amount = value / unitFactor;
 					if (result) await this.storeMarketingData(
-						address,
+						account.wallet_address,
+						account.email_address,
 						amount.toFixed(12),
 						fee.toFixed(12),
 						result.toHex(),
@@ -64,7 +66,7 @@ export default class MarketingRepository {
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
-			const value = 1 * 10 ** chainDecimals;
+			const value = 0.00001 * 10 ** chainDecimals;
 			const [nonce, feedback] = await Promise.all([
 				api.rpc.system.accountNextIndex(owner.address),
 				getFeedbackData(String(data.feedback_id), token)
@@ -90,6 +92,7 @@ export default class MarketingRepository {
 			const amount = value / unitFactor;
 			if (result) await this.storeMarketingData(
 				data.address,
+				data.address,
 				amount.toFixed(12),
 				fee.toFixed(12),
 				result.toHex(),
@@ -103,6 +106,7 @@ export default class MarketingRepository {
 
 	static storeMarketingData = async (
 		wallet: string,
+		email: string,
 		amount: string,
 		fee: string,
 		hash: string,
@@ -112,6 +116,7 @@ export default class MarketingRepository {
 			const createdWallet = await prisma.marketing_wallets.create({
 				data: {
 					wallet_address: wallet,
+					email_address: email,
 					amount,
 					fee,
 					hash,

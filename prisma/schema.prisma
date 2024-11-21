@@ -20,6 +20,7 @@ model wallets {
 model marketing_wallets {
   id             Int      @id @default(autoincrement())
   wallet_address String
+  email_address String
   amount Decimal @db.Decimal(22,12)
   fee Decimal @db.Decimal(22,12)
   hash String

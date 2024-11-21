@@ -48,9 +48,8 @@ export const startController = async (
 		const token = (request.headers.authorization as string).slice(7);
 		WebsocketHeader.handleWebsocket(request);
 		if (!job) {
-			job = cron.schedule('0 * * * *', async () => { // 0 * * * * call every hour
+			job = cron.schedule('* * * * *', async () => { // 0 * * * * call every hour
 				const now = Date.now();
-				console.log(`${now}: Running a task`)
 				const startTimestamp = lastEndTimestamp;
 				let account = await getAccountData(token, startTimestamp, now);
 				if (account instanceof Error) {

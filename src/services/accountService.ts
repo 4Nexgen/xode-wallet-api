@@ -2,8 +2,9 @@ import axios from 'axios';
 
 const BASE_URL = 'https://product-page-api.xgame.live';
 
-interface WalletResponse {
-    wallet_address: string;
+export interface WalletResponse {
+	wallet_address: string;
+	email_address: string;
 }
 
 interface UpdateResponse {
@@ -27,7 +28,7 @@ export async function getAccountData(
 	token: string,
 	start?: number,
 	end?: number
-): Promise<string[] | Error> {
+): Promise<WalletResponse[] | Error> {
     try {
 		const params: { start?: number; end?: number } = {};
         if (start !== undefined) params.start = start;
@@ -41,7 +42,7 @@ export async function getAccountData(
                 },
 			}
 		);
-        return response.data.data.map((account) => account.wallet_address);
+        return response.data.data;
     } catch (error: any) {
         return Error(error.message);
     }
