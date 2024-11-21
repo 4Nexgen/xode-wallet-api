@@ -1,14 +1,2 @@
-import {
-  FastifyBaseLogger,
-  FastifyPluginAsync,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerBase,
-  RawServerDefault,
-} from 'fastify';
-
-declare module 'fastify' {
-  export interface FastifyInstance {
-    authenticate: any;
-  }
-}
+export * from './fastify'
+export * from './substrate'

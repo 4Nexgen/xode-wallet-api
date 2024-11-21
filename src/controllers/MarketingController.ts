@@ -4,8 +4,10 @@ import MarketingRepository from './../repositories/MarketingRepository'
 import { getAccountData } from '../services/accountService';
 import { marketingAuth } from '../services/authService';
 import cron, { ScheduledTask } from 'node-cron';
-import { IMarketinAuthRequestBody } from '../schemas/AuthSchemas';
-import { IReadMarketingWalletsQuery } from '../schemas/MarketingSchemas';
+import {
+	IReadMarketingWalletsQuery,
+	ISendTokenFeedbackBody
+} from '../schemas/MarketingSchemas';
 
 let job: ScheduledTask;
 let isJobRunning: boolean = false;
@@ -16,22 +18,19 @@ export const manualController = async (
 	reply: FastifyReply
 ) => {
 	try {
-		const body = request.body as IMarketinAuthRequestBody;
-		if (!body || !body.message || !body.signature) {
-			return reply.badRequest("Invalid request body: `message`, `signature`.");
-		}
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
+		const token = (request.headers.authorization as string).slice(7);
 		const query = request.query as { start: string, end: string };
 		if (!query || !query.start || !query.end) return reply.badRequest('Missing or invalid query.');
 		WebsocketHeader.handleWebsocket(request);
-		let account = await getAccountData(Number(query.start), Number(query.end));
+		let account = await getAccountData(token, Number(query.start), Number(query.end));
 		if (account instanceof Error) throw account;
 		account = Array.from(new Set(account));
 		if (Array.isArray(account) && account.length <= 0) {
 			return reply.send({ count: account.length });
 		}
-		const result = await MarketingRepository.sendTokenRepo(account);
+		const result = await MarketingRepository.sendTokenRepo(account, token);
 		if (result instanceof Error) throw result;
 		return reply.send({ count: account.length });
 	} catch (error: any) {
@@ -44,19 +43,16 @@ export const startController = async (
   	reply: FastifyReply
 ) => {
 	try {
-		const body = request.body as IMarketinAuthRequestBody;
-		if (!body || !body.message || !body.signature) {
-			return reply.badRequest("Invalid request body: `message`, `signature`.");
-		}
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
+		const token = (request.headers.authorization as string).slice(7);
 		WebsocketHeader.handleWebsocket(request);
 		if (!job) {
 			job = cron.schedule('0 * * * *', async () => { // 0 * * * * call every hour
 				const now = Date.now();
 				console.log(`${now}: Running a task`)
 				const startTimestamp = lastEndTimestamp;
-				let account = await getAccountData(startTimestamp, now);
+				let account = await getAccountData(token, startTimestamp, now);
 				if (account instanceof Error) {
 					job.stop();
 					isJobRunning = false;
@@ -64,7 +60,7 @@ export const startController = async (
 				}
 				account = Array.from(new Set(account));
 				if (account.length > 0) {
-					const result = await MarketingRepository.sendTokenRepo(account);
+					const result = await MarketingRepository.sendTokenRepo(account, token);
 					if (result instanceof Error) {
 						job.stop();
 						isJobRunning = false;
@@ -99,10 +95,6 @@ export const pauseController = async (
 	reply: FastifyReply
   ) => {
 	try {
-		const body = request.body as IMarketinAuthRequestBody;
-		if (!body || !body.message || !body.signature) {
-			return reply.badRequest("Invalid request body: `message`, `signature`.");
-		}
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		WebsocketHeader.handleWebsocket(request);
@@ -149,4 +141,26 @@ export const marketingWalletController = async (
     } catch (error: any) {
         reply.status(500).send('Internal Server Error: ' + error);
     }
+};
+
+
+export const marketingFeedbackController = async (
+	request: FastifyRequest,
+	reply: FastifyReply
+) => {
+	try {
+		const isValid = await marketingAuth(request);
+		if (!isValid) return reply.unauthorized('Access unauthorized.');
+		const body = request.body as ISendTokenFeedbackBody;
+		if (!body || !body.address || !body.feedback_id) {
+            return reply.badRequest("Invalid request body.");
+        }
+		WebsocketHeader.handleWebsocket(request);
+		const token = (request.headers.authorization as string).slice(7);
+		const result = await MarketingRepository.sendTokenByFeedbackRepo(body, token);
+		if (result instanceof Error) throw result;
+		return reply.send(result);
+	} catch (error: any) {
+		reply.status(500).send('Internal Server Error: ' + error);
+	}
 };

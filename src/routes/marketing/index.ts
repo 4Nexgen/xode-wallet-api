@@ -9,6 +9,7 @@ import {
 	pauseController,
 	statusController,
 	marketingWalletController,
+	marketingFeedbackController,
 } from '../../controllers/MarketingController';
 
 const marketing: FastifyPluginAsync = async (fastify, opts) => {
@@ -50,6 +51,14 @@ const marketing: FastifyPluginAsync = async (fastify, opts) => {
 	}>(
 		'/',
 		marketingWalletController
+	);
+
+	fastify.post<{
+		Querystring: FastifyRequest;
+		Reply: FastifyReply;
+	}>(
+		'/feedback',
+		marketingFeedbackController
 	);
 };
 

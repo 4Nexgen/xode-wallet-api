@@ -3,9 +3,7 @@ import {
     IMintRequestBody,
 } from '../schemas/FruitBlitzSchemas';
 import TXRepository from '../modules/TXRepository';
-import InitializeAPI from '../modules/InitializeAPI';
 import { Keyring } from '@polkadot/api';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import abi from '../smartcontracts/fruitblitz/fruitblitz_nft.json';
 
 export default class FruitBlitzRepository {
@@ -18,15 +16,9 @@ export default class FruitBlitzRepository {
     static async mintRepo(nftData: IMintRequestBody) {
       console.log('mintRepo function was called');
       const instance = new FruitBlitzRepository();
-      var api: any;
       try {
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-        if (api instanceof Error) {
-          return api;
-        }
         const contractAddress = instance.contractAddress;
-        const contract = await TXRepository.getContract(api, abi, contractAddress);
+        const contract = TXRepository.getContract(abi, contractAddress);
         const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
         const owner = keyring.addFromUri(instance.ownerSeed);
         const storageDepositLimit = null;
@@ -34,7 +26,6 @@ export default class FruitBlitzRepository {
           return Error('Contract undefined');
         }
         const result = await TXRepository.sendContractTransaction(
-          api,
           contract,
           'mint',
           owner,
@@ -55,25 +46,15 @@ export default class FruitBlitzRepository {
         return result;
       } catch (error: any) {
         return Error(error || 'mintRepo error occurred.');
-      } finally {
-        if (api) {
-          await api.disconnect();
-        }
       }
   }
 
     static async updateNFTRepo(nftData: IUpdateNFTRequestBody, id: number) {
         console.log('updateNFTRepo function was called');
         const instance = new FruitBlitzRepository();
-        var api: any;
         try {
-          await cryptoWaitReady();
-          api = await InitializeAPI.apiInitialization();
-          if (api instanceof Error) {
-            return api;
-          }
           const contractAddress = instance.contractAddress;
-          const contract = await TXRepository.getContract(api, abi, contractAddress);
+          const contract = TXRepository.getContract(abi, contractAddress);
           const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
           const owner = keyring.addFromUri(instance.ownerSeed);
           const storageDepositLimit = null;
@@ -81,7 +62,6 @@ export default class FruitBlitzRepository {
             return Error('Contract undefined');
           }
           const result = await TXRepository.sendContractTransaction(
-            api,
             contract,
             'updateToken',
             owner,
@@ -101,27 +81,16 @@ export default class FruitBlitzRepository {
           return result;
         } catch (error: any) {
           return Error(error || 'updateNFTRepo error occurred.');
-        } finally {
-          if (api) {
-            await api.disconnect();
-          }
         }
     }
 
     static async getMarketplaceNfts(data: any) {
       console.log('getMarketplaceNftsByCollectionIdRepo function was called');
       const instance = new FruitBlitzRepository();
-      var api: any;
       try {
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-    if (api instanceof Error) {
-      return api;
-    }
-        const contract = await TXRepository.getContract(api, abi, instance.contractAddress);
+        const contract = TXRepository.getContract(abi, instance.contractAddress);
         if (contract !== undefined) {
           const nft = await TXRepository.sendContractQuery(
-            api,
             contract,
             'getMarketplaceNftsByCollection',
             [data.collection_id],
@@ -131,24 +100,14 @@ export default class FruitBlitzRepository {
         }
       } catch (error: any) {
         throw Error(error || 'getMarketplaceNftsByCollectionIdRepo error occurred.');
-      } finally {
-        if (!(api instanceof Error)) {
-          await api.disconnect();
-        }
       }
     }
 
-    static async getUserNFTRepo(api: any, wallet_address: string) {
+    static async getUserNFTRepo(wallet_address: string) {
       console.log('getUserNFTRepo function was called');
       const instance = new FruitBlitzRepository();
-      // var api: any;
       try {
-        // await cryptoWaitReady();
-        // api = await InitializeAPI.apiInitialization();
-        // if (api instanceof Error) {
-        //   return api;
-        // }
-        const contract = await TXRepository.getContract(api, abi, instance.contractAddress);
+        const contract = TXRepository.getContract(abi, instance.contractAddress);
         if (!contract) {
           return Error('Contract not initialized.');
         }
@@ -156,7 +115,6 @@ export default class FruitBlitzRepository {
           return Error('getUserNft function not found in the contract ABI.');
         }
         const result = await TXRepository.sendContractQuery(
-          api,
           contract,
           'getUserNft',
           [ wallet_address, '' ],
@@ -167,24 +125,13 @@ export default class FruitBlitzRepository {
         console.log('getUserNFTRepo: ', error);
         return Error(error);
       } 
-      // finally {
-      //   if (!(api instanceof Error)) {
-      //     await api.disconnect();
-      //   }
-      // }
     }
 
     static async getNFTByIdRepo(token_id: string) {
       console.log('getNFTByIdRepo function was called');
       const instance = new FruitBlitzRepository();
-      var api: any;
       try {
-        await cryptoWaitReady();
-        api = await InitializeAPI.apiInitialization();
-        if (api instanceof Error) {
-          return api;
-        }
-        const contract = await TXRepository.getContract(api, abi, instance.contractAddress);
+        const contract = TXRepository.getContract(abi, instance.contractAddress);
         if (!contract) {
           return Error('Contract not initialized.');
         }
@@ -192,7 +139,6 @@ export default class FruitBlitzRepository {
           return Error('getNFTById function not found in the contract ABI.');
         }
         const result = await TXRepository.sendContractQuery(
-          api,
           contract,
           'getNftById',
           [token_id],
@@ -201,10 +147,6 @@ export default class FruitBlitzRepository {
         return result;
       } catch (error: any) {
         return Error(error || 'getNFTByIdRepo error occurred.');
-      } finally {
-        if (!(api instanceof Error)) {
-          await api.disconnect();
-        }
       }
     }
 }

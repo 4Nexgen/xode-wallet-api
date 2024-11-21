@@ -1,8 +1,9 @@
 import { ContractPromise } from '@polkadot/api-contract';
+import { api } from './InitializeAPI';
 import '@polkadot/api-augment';
 
 export default class TXRepository {
-    static getContract = async (api: any, abi: any, contractAddress: string) => {
+    static getContract = (abi: any, contractAddress: string) => {
         try {
             const contract = new ContractPromise(api, abi, contractAddress);
             return contract;
@@ -13,7 +14,6 @@ export default class TXRepository {
     }
     
     static sendApiTransaction = async (
-        api: any,
         pallet: any,
         method: any,
         owner: any,
@@ -21,7 +21,7 @@ export default class TXRepository {
     ) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const txResult = this.constructChainExtrinsicTransaction(api, pallet, method, params);
+                const txResult = this.constructChainExtrinsicTransaction(pallet, method, params);
                 if (txResult instanceof Error) {
                     return reject(txResult);
                 }
@@ -32,7 +32,7 @@ export default class TXRepository {
                 const tx = api.tx[pallet][method](
                 ...params
                 )
-                await await tx.signAndSend(owner, { nonce: -1 }, async (result: any) => {
+                await tx.signAndSend(owner, { nonce: -1 }, async (result: any) => {
                     if (result.dispatchError) {
                         if (result.dispatchError.isModule) {
                             const decoded = api.registry.findMetaError(result.dispatchError.asModule);
@@ -60,7 +60,6 @@ export default class TXRepository {
     }
     
     static sendContractTransaction = async (
-        api: any,
         contract: any,
         method: any,
         owner: any,
@@ -70,7 +69,7 @@ export default class TXRepository {
     ) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const dryRunResult = await this.dryRunContract(api, contract, method, owner, params, instance, storageDepositLimit);
+                const dryRunResult = await this.dryRunContract(contract, method, owner, params, instance, storageDepositLimit);
                 let tx: any;
                 if (dryRunResult instanceof Error) {
                     return reject(dryRunResult);
@@ -86,7 +85,7 @@ export default class TXRepository {
                         ...params
                     );
                 }
-                await await tx.signAndSend(owner, { nonce: -1 }, async (result: any) => {
+                await tx.signAndSend(owner, { nonce: -1 }, async (result: any) => {
                     if (result.dispatchError) {
                         if (result.dispatchError.isModule) {
                             const decoded = api.registry.findMetaError(result.dispatchError.asModule);
@@ -115,17 +114,18 @@ export default class TXRepository {
     }
 
     static executeExtrinsic = async (
-        api: any,
         executeExtrinsic: any,
         rawExtrinsic: any,
     ) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const dryRunResult = await this.dryRunExtrinsic(api, rawExtrinsic);
-                if (!dryRunResult || dryRunResult.isErr) {
-                    return reject(dryRunResult instanceof Object ? dryRunResult.toHuman() : dryRunResult);
-                }
-                await await executeExtrinsic.send(async (result: any) => {
+                const dryRunResult = await this.dryRunExtrinsic(rawExtrinsic);
+                if (dryRunResult instanceof Error) {
+                    return reject(dryRunResult);
+                } else if (!dryRunResult || dryRunResult.isErr) {
+					return reject(dryRunResult instanceof Object ? dryRunResult.toHuman() : dryRunResult);
+				}
+                await executeExtrinsic.send(async (result: any) => {
                     if (result.dispatchError) {
                         if (result.dispatchError.isModule) {
                             const decoded = api.registry.findMetaError(result.dispatchError.asModule);
@@ -153,7 +153,6 @@ export default class TXRepository {
     }
     
     static sendContractQuery = async (
-        api: any,
         contract: any,
         method: any,
         params: any,
@@ -176,7 +175,6 @@ export default class TXRepository {
     }
 
     static dryRunContract = async (
-        api: any,
         contract: any,
         method: any,
         owner: any,
@@ -227,7 +225,6 @@ export default class TXRepository {
     }
 
     static constructContractExtrinsicTransaction = async (
-        api: any,
         contract: any,
         method: any,
         params: any,
@@ -252,7 +249,6 @@ export default class TXRepository {
     }
 
     static constructChainExtrinsicTransaction = (
-        api: any,
         pallet: any,
         method: any,
         params: any,
@@ -280,7 +276,6 @@ export default class TXRepository {
     }
 
     static dryRunExtrinsic = async (
-        api: any,
         rawExtrinsic: any,
     ) => {
         try {

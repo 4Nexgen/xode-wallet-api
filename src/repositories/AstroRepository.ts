@@ -1,8 +1,6 @@
 import TXRepository from '../modules/TXRepository';
-import InitializeAPI from '../modules/InitializeAPI';
 import PolkadotUtility from '../modules/PolkadotUtility';
 import { Keyring } from '@polkadot/api';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { 
   IMintRequestBody,
   ITransferRequestBody,
@@ -22,15 +20,9 @@ export default class AstroRepository {
   static async mintRepo(data: IMintRequestBody) {
     console.log('mintRepo function was called');
     const instance = new AstroRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const contractAddress = instance.economyAddress;
-      const contract = await TXRepository.getContract(api, abi, contractAddress);
+      const contract = TXRepository.getContract(abi, contractAddress);
       const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
       const owner = keyring.addFromUri(instance.ownerSeed);
       const storageDepositLimit = null;
@@ -38,7 +30,6 @@ export default class AstroRepository {
         return Error('mintRepo contract undefined.');
       }
       const result = await TXRepository.sendContractTransaction(
-        api,
         contract,
         'mint',
         owner,
@@ -52,25 +43,15 @@ export default class AstroRepository {
       return result;
     } catch (error: any) {
       return Error(error || 'mintRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async transferRepo(metadata: any, data: ITransferRequestBody) {
     console.log('transferRepo function was called');
     const instance = new AstroRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const contractAddress = instance.economyAddress;
-      const contract = await TXRepository.getContract(api, abi, contractAddress);
+      const contract = TXRepository.getContract(abi, contractAddress);
       const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
       const owner = keyring.addFromUri(instance.ownerSeed);
       const storageDepositLimit = null;
@@ -79,7 +60,6 @@ export default class AstroRepository {
         throw Error('transferRepo contract undefined.');
       }
       const dryrunResult = await TXRepository.dryRunContract(
-        api,
         contract,
         'transfer',
         owner,
@@ -94,7 +74,6 @@ export default class AstroRepository {
         return dryrunResult;
       }
       const result = await TXRepository.constructContractExtrinsicTransaction(
-        api,
         contract,
         'transfer',
         [ 
@@ -109,25 +88,15 @@ export default class AstroRepository {
       return { hash: result.toHex() };
     } catch (error: any) {
       return Error(error || 'transferRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async burnRepo(data: IBurnRequestBody) {
     console.log('burnRepo function was called');
     const instance = new AstroRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const contractAddress = instance.economyAddress;
-      const contract = await TXRepository.getContract(api, abi, contractAddress);
+      const contract = TXRepository.getContract(abi, contractAddress);
       const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
       const owner = keyring.addFromUri(instance.ownerSeed);
       const storageDepositLimit = null;
@@ -135,7 +104,6 @@ export default class AstroRepository {
         return Error('burnRepo contract undefined.');
       }
       const dryrunResult = await TXRepository.dryRunContract(
-        api,
         contract,
         'burn',
         owner,
@@ -150,7 +118,6 @@ export default class AstroRepository {
         return dryrunResult;
       }
       const result = await TXRepository.constructContractExtrinsicTransaction(
-        api,
         contract,
         'burn',
         [ 
@@ -162,26 +129,16 @@ export default class AstroRepository {
       return result;
     } catch (error: any) {
       return Error(error || 'burnRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async balanceOfRepo(account: string) {
     console.log('balanceOfRepo function was called');
     const instance = new AstroRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       // const price = instance.astroPrice;
       const contractAddress = instance.economyAddress;
-      const contract = await TXRepository.getContract(api, abi, contractAddress);
+      const contract = TXRepository.getContract(abi, contractAddress);
       if (!contract) {
         return Error('Contract not initialized.');
       }
@@ -189,8 +146,8 @@ export default class AstroRepository {
         return Error('balanceOf function not found in the contract ABI.');
       }
       const [metadata, balanceOf] = await Promise.all([
-        TXRepository.sendContractQuery(api, contract, 'metadata', [], instance),
-        TXRepository.sendContractQuery(api, contract, 'balanceOf', [ account ], instance),
+        TXRepository.sendContractQuery(contract, 'metadata', [], instance),
+        TXRepository.sendContractQuery(contract, 'balanceOf', [ account ], instance),
       ])
       const tempVal = { decimals: '6', tokenSymbol: 'ASTRO', tokenName: 'AstroChibbi' };
       const mtdt = metadata.ok != undefined ? metadata.ok : tempVal;
@@ -210,25 +167,15 @@ export default class AstroRepository {
       };
     } catch (error: any) {
       return Error(error || 'balanceOfRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
   
   static async totalSupplyRepo() {
     console.log('totalSupplyRepo function was called');
     const instance = new AstroRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const contractAddress = instance.economyAddress;
-      const contract = await TXRepository.getContract(api, abi, contractAddress);
+      const contract = TXRepository.getContract(abi, contractAddress);
       if (!contract) {
         return Error('Contract not initialized.');
       }
@@ -236,7 +183,6 @@ export default class AstroRepository {
         return Error('totalSupply function not found in the contract ABI.');
       }
       const energy = await TXRepository.sendContractQuery(
-        api,
         contract,
         'totalSupply',
         [],
@@ -247,24 +193,15 @@ export default class AstroRepository {
       };
     } catch (error: any) {
       return Error(error || 'totalSupplyRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async getContractMetadataRepo() {
     console.log('getTokenMetadataRepo function was called');
     const instance = new AstroRepository();
-    var api: any;
     try {
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const contractAddress = instance.economyAddress;
-      const contract = await TXRepository.getContract(api, abi, contractAddress);
+      const contract = TXRepository.getContract(abi, contractAddress);
       if (!contract) {
         return Error('Contract not initialized.');
       }
@@ -272,7 +209,6 @@ export default class AstroRepository {
         return Error('`metadata` function not found in the contract ABI.');
       }
       const metadata = await TXRepository.sendContractQuery(
-        api,
         contract,
         'metadata',
         [],
@@ -287,10 +223,6 @@ export default class AstroRepository {
       }
     } catch (error: any) {
       return Error(error || 'getTokenMetadataRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 }

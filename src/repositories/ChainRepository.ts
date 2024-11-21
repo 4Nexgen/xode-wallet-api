@@ -2,9 +2,7 @@ import TXRepository from '../modules/TXRepository';
 import AzkalRepository from '../repositories/AzkalRepository';
 import XaverRepository from '../repositories/XaverRepository';
 import XGameRepository from '../repositories/XGameRepository';
-import InitializeAPI from '../modules/InitializeAPI';
 import PolkadotUtility from '../modules/PolkadotUtility';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Keyring } from '@polkadot/api';
 import { 
   ITransferTokenRequestBody,
@@ -13,10 +11,13 @@ import {
 } from '../schemas/ChainSchemas';
 import abi from '../smartcontracts/xode/transfer_controller.json';
 import axios from 'axios';
+import IXONRepository from './IXONRepository';
+import { api } from '../modules/InitializeAPI';
+import { TOKENS } from '../constants/index';
 
 export default class ChainRepository {
   ownerSeed = process.env.ASTROCHIBBI_SEED as string;
-  xonPrice = '10';
+  xonPrice = '0';
   xonImage = 'https://bafkreia5hy2nh46tarcpqybz37mey3lkhoyyxw4qecs7bxw22d4nftz4nm.ipfs.w3s.link/';
   abi = require("./../smartcontracts/astrochibbi/astro_nft.json");
 
@@ -41,21 +42,38 @@ export default class ChainRepository {
     }
   }
 
-  static async getTokensRepo(api: any, wallet_address: string) {
-    console.log('getSmartContractRepo function was called');
+	static async getAssetsRepo() {
+		console.log('getAssetsRepo function was called');
+		try {
+			const entries = await api.query.assets.metadata.entries();
+			const assets = entries.map(([_, value]) => {
+				const metadata = value.toHuman() as {
+					decimals: string;
+					symbol: string;
+					name: string;
+				};
+				const token = TOKENS.find((t) => t.symbol === metadata.symbol);
+				return {
+					image: token?.image || '',
+					symbol: metadata.symbol,
+					name: metadata.name,
+					decimals: parseInt(metadata.decimals, 10),
+				};
+			});
+			return assets;
+		} catch (error: any) {
+			return Error(error || 'getAssetsRepo error occurred.');
+		}
+	}
+
+  static async getTokensRepo(wallet_address: string) {
     const instance = new ChainRepository();
-    // var api: any;
     try {
-      // await cryptoWaitReady();
-      // api = await InitializeAPI.apiInitialization();
-      // if (api instanceof Error) {
-      //   return api;
-      // }
       const balance = await api.derive.balances.all(wallet_address);
       const available = balance.availableBalance;
       const chainDecimals = api.registry.chainDecimals[0];
       const tokens = api.registry.chainTokens;
-      const token_name = 'Xode';
+      const token_name = 'Xode Native Token';
       const free = PolkadotUtility.balanceFormatter(
         chainDecimals,
         tokens,
@@ -71,53 +89,65 @@ export default class ChainRepository {
     } catch (error: any) {
       return Error(error || 'getSmartContractRepo error occurred.');
     } 
-    // finally {
-    //   if (!(api instanceof Error)) {
-    //     await api.disconnect();
-    //   }
-    // }
+  }
+
+  static async getTokenRepo(wallet_address: string) {
+    const instance = new ChainRepository();
+    try {
+      const balance = await api.derive.balances.all(wallet_address);
+      const available = balance.availableBalance;
+      const chainDecimals = api.registry.chainDecimals[0];
+      const tokens = api.registry.chainTokens;
+      const token_name = 'Xode Native Token';
+      const free = PolkadotUtility.balanceFormatter(
+        chainDecimals,
+        tokens,
+        available
+      );
+      return {
+        status: 200,
+        messase: "Ok",
+        data: {
+          balance: free,
+          symbol: tokens[0],
+          name: token_name,
+          price: instance.xonPrice,
+          image: instance.xonImage,
+        }
+      }
+    } catch (error: any) {
+      return {
+        status: 500,
+        messase: "Error",
+        data: {errormage: instance.xonImage,
+        }
+      }
+    } 
   }
 
   static async getTokenMetadataRepo() {
     console.log('getTokenMetadataRepo function was called');
     const instance = new ChainRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
-      const properties = await api.rpc.system.properties();
-      return {
+      const { tokenSymbol, tokenDecimals } = await api.rpc.system.properties();
+      let data = {
         name: 'Xode Native Token',
-        symbol: properties.toHuman().tokenSymbol[0],
-        decimals: properties.toHuman().tokenDecimals[0],
+        symbol: String(tokenSymbol.toJSON()),
+        decimals: Number(tokenDecimals.toJSON()),
         image: instance.xonImage,
-        price: instance.xonPrice,
-      }
+      };
+      return data;
     } catch (error: any) {
       return Error(error || 'getTokenMetadataRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async tokenTransferRepo(data: ITransferTokenRequestBody) {
     console.log('tokenTransferRepo function was called');
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const chainDecimals = api.registry.chainDecimals[0];
       const value = parseInt(data.value) * 10 ** chainDecimals;
-      const result = await TXRepository.constructChainExtrinsicTransaction(
-        api,
+      const result = TXRepository.constructChainExtrinsicTransaction(
         'balances',
         'transfer',
         [
@@ -129,28 +159,18 @@ export default class ChainRepository {
       // const finalFee = (parseFloat(partialFee.toHuman()) / 1000).toFixed(4);
       // console.log(finalFee);
       // console.log(weight.toHuman());
+	  if (result instanceof Error) return result;
       return { hash: result.toHex() };
     } catch (error: any) {
       console.log('tokenTransferRepo: ' + error);
       return Error(error);
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async tokenTransferAllRepo(data: ITransferAllTokenRequestBody) {
     console.log('tokenTransferAllRepo function was called');
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
-      const result = await TXRepository.constructChainExtrinsicTransaction(
-        api,
+      const result = TXRepository.constructChainExtrinsicTransaction(
         'balances',
         'transferAll',
         [
@@ -158,25 +178,19 @@ export default class ChainRepository {
           true
         ]
       );
+	  if (result instanceof Error) return result;
       return { hash: result.toHex() };
     } catch (error: any) {
       console.log('tokenTransferAllRepo: ' + error);
       return Error(error);
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static submitExtrinsicRepo = async (data: ISubmitExtrinsicRequestBody) => {
     console.log('submitExtrinsicRepo function was called');
-    var api: any;
     try {
-      api = await InitializeAPI.apiInitialization();
       const executeExtrinsic = api.tx(data.extrinsic);
       const result = await TXRepository.executeExtrinsic(
-        api,
         executeExtrinsic,
         data.extrinsic
       );
@@ -184,26 +198,16 @@ export default class ChainRepository {
     } catch (error: any) {
       console.log('submitExtrinsicRepo: ', error);
       return Error(error);
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   };
 
   static async airdropXONRepo(data: any) {
     console.log('airdropXONRepo function was called');
     const instance = new ChainRepository();
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const contractAddress = process.env.TRANSFER_ADDRESS as string;
       console.log(contractAddress);
-      const contract = await TXRepository.getContract(api, abi, contractAddress);
+      const contract = TXRepository.getContract(abi, contractAddress);
       if (contract === undefined) { 
         return Error('Contract undefined');
       }
@@ -239,22 +243,12 @@ export default class ChainRepository {
       return;
     } catch (error: any) {
       return Error(error || 'airdropXONRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async getTotalSupplyRepo() {
     console.log('getTotalSupplyRepo function was called');
-    var api: any;
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const [balance, chainDecimals, token] = await Promise.all([
         api.query.balances.totalIssuance(),
         api.registry.chainDecimals[0],
@@ -268,16 +262,11 @@ export default class ChainRepository {
       return { totalSupply: parsedBalance }
     } catch (error: any) {
       return Error(error || 'getTotalSupplyRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
   static async getCirculatingSupplyRepo() {
     console.log('getTotalSupplyRepo function was called');
-    var api: any;
     const mainnet_accounts = [
       '5HafQavv6qpUABpVR6csSXeywLqdNMqAMUbYZ7jkGVLYpzgW',
       '5Eppkh8cv4jEMVLK9JX4k6D7m5hFJY2x8xNfuF8bHMJ4CTHp',
@@ -292,11 +281,6 @@ export default class ChainRepository {
       '5D7Jtfmsx4exkDFVDRpub5iBvbBVyqAAW54E7UybMxH91yBe'
     ];
     try {
-      await cryptoWaitReady();
-      api = await InitializeAPI.apiInitialization();
-      if (api instanceof Error) {
-        return api;
-      }
       const isMainnet = process.env.WS_PROVIDER_ENDPOINT === process.env.MAINNET_WS_PROVIDER_ENDPOINT;
       const accounts = isMainnet
         ? mainnet_accounts
@@ -321,10 +305,6 @@ export default class ChainRepository {
       return { circulatingSupply: circulatingSupply.toFixed(4) };
     } catch (error: any) {
       return Error(error || 'getTotalSupplyRepo error occurred.');
-    } finally {
-      if (!(api instanceof Error)) {
-        await api.disconnect();
-      }
     }
   }
 
@@ -334,16 +314,19 @@ export default class ChainRepository {
     const azk_instance = new AzkalRepository();
     const xav_instance = new XaverRepository();
     const xgm_instance = new XGameRepository();
+    const ixon_instance = new IXONRepository();
     try {
       const xonPrice: number = parseFloat(xon_instance.xonPrice);
       const azkPrice: number = parseFloat(azk_instance.azkPrice);
       const xavPrice: number = parseFloat(xav_instance.xavPrice);
       const xgmPrice: number = parseFloat(xgm_instance.xgmPrice);
+      const ixonPrice: number = parseFloat(ixon_instance.ixonPrice);
       const prices = {
         XON: xonPrice * data.rate,
         AZK: azkPrice * data.rate,
         XAV: xavPrice * data.rate,
-        XGM: xgmPrice * data.rate
+        XGM: xgmPrice * data.rate,
+        IXON: ixonPrice * data.rate
       };
       return { currency: data.currency, prices };
     } catch (error: any) {
