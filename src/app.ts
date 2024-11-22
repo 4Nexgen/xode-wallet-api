@@ -19,6 +19,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 	opts
 ): Promise<void> => {
   	// Place here your custom code!
+	// require('dotenv').config({ path: `${process.env.NODE_ENV}.env` });
 	await cryptoWaitReady();
 	const ALLOWED_DOMAINS = (process.env.ALLOWED_DOMAINS as string).split(',');
 	fastify.register(FastifyCors, {

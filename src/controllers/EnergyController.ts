@@ -5,14 +5,12 @@ import {
   ISetEnergyImageRequestBody
 } from '../schemas/EnergySchemas';
 import EnergyRepository from '../repositories/EnergyRepository';
-import WebsocketHeader from '../modules/WebsocketHeader';
 
 export const decreaseEnergyController = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const requestBody = request.body as IDecreaseEnergyRequestBody;
     if (
       !requestBody || 
@@ -53,7 +51,6 @@ export const getEnergyController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const requestBody = request.body as IGetEnergyRequestBody;
     if (!requestBody || !requestBody.wallet_address) {
       return reply.badRequest("Missing or invalid request body.");
@@ -102,7 +99,6 @@ export const setEnergyImageController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const requestBody = request.body as ISetEnergyImageRequestBody;
     if (!requestBody || !requestBody.image_url) {
       return reply.badRequest("Invalid request body. Required fields: 'image_url'");
@@ -123,7 +119,6 @@ export const getEnergyImageController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const result = await EnergyRepository.getEnergyImageRepo();
     if (result instanceof Error) {
       throw result;
