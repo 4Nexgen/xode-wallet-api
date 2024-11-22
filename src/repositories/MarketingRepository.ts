@@ -1,5 +1,8 @@
 import { Keyring } from '@polkadot/api';
-import { updateAccountData, getFeedbackData } from '../services/accountService';
+import {
+	updateAccountData,
+	getFeedbackData,
+} from '../services/accountService';
 import prisma from '../db';
 import { PrismaClient } from "@prisma/client";
 import extension from "prisma-paginate";
@@ -10,8 +13,25 @@ import {
 import { api } from '../modules/InitializeAPI';
 import { WalletResponse } from '../services/accountService';
 
+let processedAccounts = new Map<string, string>();
+
 export default class MarketingRepository {
 	ownerSeed = process.env.MARKETING_SEED as string;
+
+	static getBlockHash = async () => {
+		api.rpc.chain.subscribeNewHeads(async (header) => {
+            const blockHash = header.hash;
+            const signedBlock = await api.rpc.chain.getBlock(blockHash);
+            for (const extrinsic of signedBlock.block.extrinsics) {
+				const tx_hash = extrinsic.hash.toHex();
+                if (processedAccounts.has(tx_hash)) {
+					const wallet = processedAccounts.get(tx_hash);
+					wallet ? this.updateBlockHash(tx_hash, blockHash.toString()) : null;
+					processedAccounts.delete(tx_hash);
+                }
+            }
+        });
+	}
 
 	static async sendTokenRepo(data: WalletResponse[], token: string) {
 		console.log('sendTokenRepo function was called');
@@ -47,7 +67,8 @@ export default class MarketingRepository {
 						fee.toFixed(12),
 						result.toHex(),
 						wallet instanceof Error ? 'XGame' : wallet.games.game_name || 'XGame'
-					)
+					);
+					processedAccounts.set(result.toHex(), account.wallet_address);
 				}
 				index += 1;
 				const newNonce = await api.rpc.system.accountNextIndex(owner.address);
@@ -109,7 +130,7 @@ export default class MarketingRepository {
 		email: string,
 		amount: string,
 		fee: string,
-		hash: string,
+		tx_hash: string,
 		received_type: string,
 	) => {
 		try {
@@ -119,7 +140,7 @@ export default class MarketingRepository {
 					email_address: email,
 					amount,
 					fee,
-					hash,
+					tx_hash,
 					received_type,
 				},
 			});
@@ -136,7 +157,7 @@ export default class MarketingRepository {
 					...(query.wallet ? [{ wallet: query.wallet }] : []),
 					...(query.amount ? [{ amount: query.amount }] : []),
 					...(query.fee ? [{ fee: query.fee }] : []),
-					...(query.hash ? [{ hash: query.hash }] : []),
+					...(query.tx_hash ? [{ tx_hash: query.tx_hash }] : []),
 					...(query.received_type ? [{ received_type: query.received_type }] : []),
 					...(query.date_start ? [{ date: { gte: new Date(query.date_start) } }] : []),
 					...(query.date_end ? [{ date: { lte: new Date(query.date_end) } }] : []),
@@ -167,6 +188,21 @@ export default class MarketingRepository {
 			return { ...result, sums };
 		} catch (error: any) {
 			return Error(error);
+		}
+	};
+
+	static updateBlockHash = async (
+		tx_hash: string,
+		block_hash: string,
+	) => {
+		try {
+			const updatedHash = await prisma.marketing_wallets.update({
+				where: { tx_hash },
+				data: { block_hash },
+			});
+			return updatedHash;
+		} catch (error) {
+			throw String(error || 'Unknown error occurred.');
 		}
 	};
 }

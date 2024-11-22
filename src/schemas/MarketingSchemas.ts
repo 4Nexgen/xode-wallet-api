@@ -3,7 +3,7 @@ export interface IReadMarketingWalletsQuery {
 	wallet: string;
 	amount: string;
 	fee: string;
-	hash: string;
+	tx_hash: string;
 	received_type: string;
 	date_start: string;
 	date_end: string;
