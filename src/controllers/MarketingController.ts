@@ -1,5 +1,4 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import WebsocketHeader from '../modules/WebsocketHeader';
 import MarketingRepository from './../repositories/MarketingRepository'
 import { getAccountData } from '../services/accountService';
 import { marketingAuth } from '../services/authService';
@@ -23,7 +22,6 @@ export const manualController = async (
 		const token = (request.headers.authorization as string).slice(7);
 		const query = request.query as { start: string, end: string };
 		if (!query || !query.start || !query.end) return reply.badRequest('Missing or invalid query.');
-		WebsocketHeader.handleWebsocket(request);
 		let account = await getAccountData(token, Number(query.start), Number(query.end));
 		if (account instanceof Error) throw account;
 		account = Array.from(new Set(account));
@@ -46,11 +44,10 @@ export const startController = async (
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		const token = (request.headers.authorization as string).slice(7);
-		WebsocketHeader.handleWebsocket(request);
+		MarketingRepository.getBlockHash();
 		if (!job) {
-			job = cron.schedule('0 * * * *', async () => { // 0 * * * * call every hour
+			job = cron.schedule('* * * * *', async () => { // 0 * * * * call every hour
 				const now = Date.now();
-				console.log(`${now}: Running a task`)
 				const startTimestamp = lastEndTimestamp;
 				let account = await getAccountData(token, startTimestamp, now);
 				if (account instanceof Error) {
@@ -67,7 +64,7 @@ export const startController = async (
 						throw result;
 					}
 					lastEndTimestamp = now;
-					console.log(`${now}: List of wallets - ${account}`);
+					console.log(`${now}: List of wallets - ${JSON.stringify(account, null, 2)}`);
 				} else {
 					lastEndTimestamp = now;
 					console.log(`${now}: No accounts`);
@@ -97,7 +94,6 @@ export const pauseController = async (
 	try {
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
-		WebsocketHeader.handleWebsocket(request);
 		if (job && isJobRunning) {
             job.stop();
             isJobRunning = false;
@@ -155,7 +151,6 @@ export const marketingFeedbackController = async (
 		if (!body || !body.address || !body.feedback_id) {
             return reply.badRequest("Invalid request body.");
         }
-		WebsocketHeader.handleWebsocket(request);
 		const token = (request.headers.authorization as string).slice(7);
 		const result = await MarketingRepository.sendTokenByFeedbackRepo(body, token);
 		if (result instanceof Error) throw result;

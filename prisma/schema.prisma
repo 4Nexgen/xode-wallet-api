@@ -20,9 +20,11 @@ model wallets {
 model marketing_wallets {
   id             Int      @id @default(autoincrement())
   wallet_address String
+  email_address String
   amount Decimal @db.Decimal(22,12)
   fee Decimal @db.Decimal(22,12)
-  hash String
+  tx_hash String @unique
+  block_hash String?
   received_type String @default("Not classified")
   created_at     DateTime @default(now())
   updated_at     DateTime @default(now())

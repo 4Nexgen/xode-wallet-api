@@ -1,5 +1,5 @@
 import InitializeAPI from './modules/InitializeAPI';
-import WebsocketHeader from './modules/WebsocketHeader';
+// import WebsocketHeader from './modules/WebsocketHeader';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { join } from 'path';
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload';
@@ -80,9 +80,9 @@ const app: FastifyPluginAsync<AppOptions> = async (
 			info: {
 				title: 'XODE Wallet',
 				description: 'Fastify swagger of XODE to smart contract.\n\n' +
-				'\n' + 'AstroChibbi: ' + process.env.TESTNET_ASTROCHIBBI_ADDRESS as string +
-				'\n' + 'Energy Capsule: ' + process.env.TESTNET_ASTRO_ENERGY_ADDRESS as string +
-				'\n' + 'Astro Economy: ' + process.env.TESTNET_ASTRO_ECONOMY_ADDRESS as string,
+				'\n' + 'AstroChibbi: ' + process.env.ASTROCHIBBI_ADDRESS as string +
+				'\n' + 'Energy Capsule: ' + process.env.ASTRO_ENERGY_ADDRESS as string +
+				'\n' + 'Astro Economy: ' + process.env.ASTRO_ECONOMY_ADDRESS as string,
 				version: '0.1.3'
 			},
 			externalDocs: {
@@ -144,7 +144,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 	})
 
 	fastify.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
-		WebsocketHeader.handleWebsocket(request);
+		// WebsocketHeader.handleWebsocket(request);
 		const api = await InitializeAPI.apiInitialization();
 		if (api instanceof Error) reply.internalServerError(String(api));
 	})

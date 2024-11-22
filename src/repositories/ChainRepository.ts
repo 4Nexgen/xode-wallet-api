@@ -281,7 +281,7 @@ export default class ChainRepository {
       '5D7Jtfmsx4exkDFVDRpub5iBvbBVyqAAW54E7UybMxH91yBe'
     ];
     try {
-      const isMainnet = process.env.WS_PROVIDER_ENDPOINT === process.env.MAINNET_WS_PROVIDER_ENDPOINT;
+      const isMainnet = process.env.WS_PROVIDER_ENDPOINT === 'wss://rpcnodea01.xode.net/n7yoxCmcIrCF6VziCcDmYTwL8R03a/rpc';
       const accounts = isMainnet
         ? mainnet_accounts
         : testnet_accounts;
