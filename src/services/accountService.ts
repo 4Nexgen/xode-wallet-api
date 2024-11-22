@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { signMessage } from './authService';
 
-const BASE_URL = 'https://product-page-api.xgame.live';
+const BASE_URL = process.env.PRODUCT_API;
 
 export interface WalletResponse {
 	wallet_address: string;
@@ -29,6 +30,8 @@ export async function getAccountData(
 	start?: number,
 	end?: number
 ): Promise<WalletResponse[] | Error> {
+	const result = signMessage('marketing');
+	if (!result.is_valid) return Error('Invalid signature.');
     try {
 		const params: { start?: number; end?: number } = {};
         if (start !== undefined) params.start = start;
@@ -39,6 +42,7 @@ export async function getAccountData(
 				params,
 				headers: {
                     Authorization: `Bearer ${token}`,
+					Token: result.token
                 },
 			}
 		);
@@ -52,6 +56,8 @@ export async function updateAccountData(
 	wallet: string,
 	token: string
 ): Promise<UpdateResponse | Error> {
+	const result = signMessage('marketing');
+	if (!result.is_valid) return Error('Invalid signature.');
     try {
         const response = await axios.put<{ data: UpdateResponse }>(
 			`${BASE_URL}/auth/updateWallet/${wallet}`,
@@ -59,6 +65,7 @@ export async function updateAccountData(
 			{
                 headers: {
                     Authorization: `Bearer ${token}`,
+					Token: result.token
                 },
             }
 		);
@@ -72,12 +79,15 @@ export async function getFeedbackData(
 	id: string,
 	token: string
 ): Promise<FeedbackResponse | Error> {
+	const result = signMessage('marketing');
+	if (!result.is_valid) return Error('Invalid signature.');
     try {
         const response = await axios.get<{ data: FeedbackResponse }>(
             `${BASE_URL}/feed_back/getFeedBack/${id}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
+					Token: result.token
                 },
             }
         );

@@ -64,7 +64,7 @@ export const startController = async (
 						throw result;
 					}
 					lastEndTimestamp = now;
-					console.log(`${now}: List of wallets - ${account}`);
+					console.log(`${now}: List of wallets - ${JSON.stringify(account, null, 2)}`);
 				} else {
 					lastEndTimestamp = now;
 					console.log(`${now}: No accounts`);

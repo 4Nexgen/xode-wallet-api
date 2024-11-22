@@ -205,10 +205,10 @@ export const getTotalSupplyController = async (
     reply: FastifyReply
   ) => {
     try {
-      let websocket = request.headers.websocket;
-      if (!websocket) {
-        request.headers.websocket = process.env.MAINNET_WS_PROVIDER_ENDPOINT;
-      }
+    //   let websocket = request.headers.websocket;
+    //   if (!websocket) {
+    //     request.headers.websocket = process.env.MAINNET_WS_PROVIDER_ENDPOINT;
+    //   }
       const result = await ChainRepository.getTotalSupplyRepo();
       if (result instanceof Error) {
         throw result;
@@ -224,10 +224,10 @@ export const getCirculatingSupplyController = async (
     reply: FastifyReply
   ) => {
     try {
-      let websocket = request.headers.websocket;
-      if (!websocket) {
-        request.headers.websocket = process.env.MAINNET_WS_PROVIDER_ENDPOINT;
-      }
+    //   let websocket = request.headers.websocket;
+    //   if (!websocket) {
+    //     request.headers.websocket = process.env.MAINNET_WS_PROVIDER_ENDPOINT;
+    //   }
       const result = await ChainRepository.getCirculatingSupplyRepo();
       if (result instanceof Error) {
         throw result;

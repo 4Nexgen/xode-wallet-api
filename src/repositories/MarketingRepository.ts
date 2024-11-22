@@ -13,7 +13,7 @@ import {
 import { api } from '../modules/InitializeAPI';
 import { WalletResponse } from '../services/accountService';
 
-let processedAccounts = new Map<string, string>();
+let processedAccounts = new Set<string>();
 
 export default class MarketingRepository {
 	ownerSeed = process.env.MARKETING_SEED as string;
@@ -25,8 +25,7 @@ export default class MarketingRepository {
             for (const extrinsic of signedBlock.block.extrinsics) {
 				const tx_hash = extrinsic.hash.toHex();
                 if (processedAccounts.has(tx_hash)) {
-					const wallet = processedAccounts.get(tx_hash);
-					wallet ? this.updateBlockHash(tx_hash, blockHash.toString()) : null;
+					this.updateBlockHash(tx_hash, blockHash.toString());
 					processedAccounts.delete(tx_hash);
                 }
             }
@@ -40,7 +39,7 @@ export default class MarketingRepository {
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
-			const value = 0.00001 * 10 ** chainDecimals;
+			const value = 1 * 10 ** chainDecimals;
 			let nonce = await api.rpc.system.accountNextIndex(owner.address);
 			let index = 0;
 			while (index < data.length) {
@@ -68,7 +67,7 @@ export default class MarketingRepository {
 						result.toHex(),
 						wallet instanceof Error ? 'XGame' : wallet.games.game_name || 'XGame'
 					);
-					processedAccounts.set(result.toHex(), account.wallet_address);
+					processedAccounts.add(result.toHex());
 				}
 				index += 1;
 				const newNonce = await api.rpc.system.accountNextIndex(owner.address);
@@ -87,7 +86,7 @@ export default class MarketingRepository {
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
-			const value = 0.00001 * 10 ** chainDecimals;
+			const value = 1 * 10 ** chainDecimals;
 			const [nonce, feedback] = await Promise.all([
 				api.rpc.system.accountNextIndex(owner.address),
 				getFeedbackData(String(data.feedback_id), token)
