@@ -9,14 +9,12 @@ import {
 } from '../schemas/FruitBlitzSchemas';
 import FruitBlitzRepository from '../repositories/FruitBlitzRepository';
 import EnergyRepository from '../repositories/EnergyRepository';
-import WebsocketHeader from '../modules/WebsocketHeader';
 
 export const mintController = async (
     request: FastifyRequest,
     reply: FastifyReply
 ) => {
     try {
-        WebsocketHeader.handleWebsocket(request);
         const requestBody = request.body as IMintRequestBody;
         if (!requestBody) {
             return reply.badRequest('Missing or invalid request body.');
@@ -50,7 +48,6 @@ export const updateNFTHandler = async (
     reply: FastifyReply
 ) => {
     try {
-        WebsocketHeader.handleWebsocket(request);
         const requestParams = request.params as IUpdateOneNFTRequestParams;
         if (!requestParams || !requestParams.id) {
             return reply.badRequest("Missing 'id' parameter in URI 'nfts/:id'");
@@ -93,7 +90,6 @@ export const getMarketplaceNftsHandler = async (
     reply: FastifyReply
 ) => {
     try {
-        WebsocketHeader.handleWebsocket(request);
         const requestBody = request.body as IGetMarketplaceNFTRequestBody;
         if (!requestBody || !requestBody.collection_id) {
             return reply.badRequest("Invalid request body. Required fields: 'collection_id'.");
@@ -113,7 +109,6 @@ export const getUserNftsHandler = async (
     reply: FastifyReply
 ) => {
     try {
-        WebsocketHeader.handleWebsocket(request);
         const requestParams = request.params as IGetUserNFTRequestParams;
         if (!requestParams || !requestParams.wallet_address) {
             return reply.badRequest("Invalid request parameters. Required parameter: wallet address");
@@ -133,7 +128,6 @@ export const getNftByIdHandler = async (
     reply: FastifyReply
 ) => {
     try {
-        WebsocketHeader.handleWebsocket(request);
         const requestParams = request.params as IGetNFTByIdRequestParams;
         if (!requestParams || !requestParams.token_id) {
             return reply.badRequest("Invalid request parameters. Required parameter: token_id");
@@ -157,7 +151,6 @@ export const dashboardNftHandler = async (
     reply: FastifyReply
 ) => {
     try {
-        WebsocketHeader.handleWebsocket(request);
         const requestParams = request.params as IGetUserNFTRequestParams;
         if (!requestParams || !requestParams.wallet_address) {
             return reply.badRequest("Invalid request parameters. Required parameter: wallet address");

@@ -10,7 +10,6 @@ import AzkalRepository from '../repositories/AzkalRepository';
 import XaverRepository from '../repositories/XaverRepository';
 import XGameRepository from '../repositories/XGameRepository';
 import ChainRepository from '../repositories/ChainRepository';
-import WebsocketHeader from '../modules/WebsocketHeader';
 import WalletRepository from '../repositories/WalletRepository';
 import IXONRepository from '../repositories/IXONRepository';
 
@@ -19,7 +18,6 @@ export const mintController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const requestBody = request.body as IMintRequestBody;
     if (
       !requestBody || 
@@ -53,7 +51,6 @@ export const transferController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const requestBody = request.body as ITransferRequestBody;
     if (
       !requestBody || 
@@ -87,7 +84,6 @@ export const burnController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const requestBody = request.body as IBurnRequestBody;
     if (
       !requestBody || 
@@ -120,7 +116,6 @@ export const totalSupplyController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
 	let result;
     if (request.url.includes("azk")) {
       result = await AzkalRepository.totalSupplyRepo();
@@ -147,7 +142,6 @@ export const balanceOfController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const requestParams = request.params as IBalanceOfRequestParams;
     if (!requestParams || !requestParams.account) {
       return reply.badRequest("Invalid request parameter. Required fields: 'account'");
@@ -176,7 +170,6 @@ export const airdropController = async (
   reply: FastifyReply
 ) => {
   try {
-    WebsocketHeader.handleWebsocket(request);
     const query: any = request.query;
     let { account }: { account: string[] } = request.body as IAirdropAssetRequestBody;
     let wallets: any[] = [];
