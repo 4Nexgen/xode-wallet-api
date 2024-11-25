@@ -12,6 +12,7 @@ import XGameRepository from '../repositories/XGameRepository';
 import ChainRepository from '../repositories/ChainRepository';
 import WalletRepository from '../repositories/WalletRepository';
 import IXONRepository from '../repositories/IXONRepository';
+import IXAVRepository from '../repositories/IXAVRepository';
 
 export const mintController = async (
   request: FastifyRequest,
@@ -35,6 +36,8 @@ export const mintController = async (
       result = await XGameRepository.mintRepo(requestBody);
     } else if (request.url.includes("ixon")) {
       result = await IXONRepository.mintRepo(requestBody);
+    } else if (request.url.includes("ixav")) {
+      result = await IXAVRepository.mintRepo(requestBody);
     }
     
     if (result instanceof Error) {
@@ -68,6 +71,8 @@ export const transferController = async (
       result = await XGameRepository.transferRepo(requestBody);
     } else if (request.url.includes("ixon")) {
       result = await IXONRepository.transferRepo(requestBody);
+    } else if (request.url.includes("ixav")) {
+      result = await IXAVRepository.transferRepo(requestBody);
     }
 
     if (result instanceof Error) {
@@ -101,6 +106,8 @@ export const burnController = async (
       result = await XGameRepository.burnRepo(requestBody);
     } else if (request.url.includes("ixon")) {
       result = await IXONRepository.burnRepo(requestBody);
+    }  else if (request.url.includes("ixav")) {
+      result = await IXAVRepository.burnRepo(requestBody);
     }
     if (result instanceof Error) {
       throw result;
@@ -125,6 +132,8 @@ export const totalSupplyController = async (
       result = await XGameRepository.totalSupplyRepo();
     } else if (request.url.includes("ixon")) {
       result = await IXONRepository.totalSupplyRepo();
+    } else if (request.url.includes("ixav")) {
+      result = await IXAVRepository.totalSupplyRepo();
     }
     if (result instanceof Error) {
       throw result;
@@ -155,6 +164,8 @@ export const balanceOfController = async (
       result = await XGameRepository.balanceOfRepo(requestParams.account);
     } else if (request.url.includes("ixon")) {
       result = await IXONRepository.balanceOfRepo(requestParams.account);
+    } else if (request.url.includes("ixav")) {
+      result = await IXAVRepository.balanceOfRepo(requestParams.account);
     }
     if (result instanceof Error) {
       throw result;
@@ -193,6 +204,8 @@ export const airdropController = async (
       result = await XGameRepository.airdropXGMRepo(account);
     } else if (request.url.includes("ixon")) {
       result = await IXONRepository.airdropIXONRepo(account);
+    } else if (request.url.includes("ixav")) {
+      result = await IXAVRepository.airdropIXAVRepo(account);
     } else if (request.url.includes("chain")) {
       result = await ChainRepository.airdropXONRepo(account);
     }

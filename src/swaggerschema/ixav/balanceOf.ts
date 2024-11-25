@@ -1,8 +1,8 @@
-// Schema for updating NFT
-export const submit_extrinsic = {
-    summary: 'Submit any signed TX hash to chain',
-    tags: ['Chain'],
-    description: 'Schema for submitting TX to chain.',
+// Schema for getting NFTs
+export const balanceOf = {
+    summary: 'Get IXAV balance of the account',
+    tags: ['Private XAV Token'],
+    description: 'Schema for getting IXAV balance of the account.',
     // headers: {
     //     type: 'object',
     //     properties: {
@@ -16,30 +16,26 @@ export const submit_extrinsic = {
     //     },
     // },
     // Request body schema
-    body: {
+    params: {
         type: 'object',
         properties: {
-            extrinsic: { type: 'string' },
+            account: { type: 'string' }
         },
         required: [
-            'extrinsic',
+            'account'
         ],
     },
     // Response schema for success
     response: {
         200: {
-            description: 'Successful response after submitting TX',
+            description: 'Success response after getting balance.',
             type: 'object',
             properties: {
-                status: { type: 'number' },
-                message: { type: 'string' },
-                data: {
-                    type: 'object',
-                    properties: {
-                        isInBlock: { type: 'boolean' },
-                        blockHash: { type: 'string' },
-                    },
-                },
+                balance: { type: 'string' },
+                symbol: { type: 'string' },
+                name: {type: 'string' },
+                price: { type: 'string' },
+                image: { type: 'string' },
             },
         },
         // Response schema for unspecified code
