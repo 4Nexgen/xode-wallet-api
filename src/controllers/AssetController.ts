@@ -147,34 +147,37 @@ export const totalSupplyController = async (
 
 
 export const balanceOfController = async (
-  request: FastifyRequest,
-  reply: FastifyReply
-) => {
-  try {
-    const requestParams = request.params as IBalanceOfRequestParams;
-    if (!requestParams || !requestParams.account) {
-      return reply.badRequest("Invalid request parameter. Required fields: 'account'");
-    }
-	let result;
-    if (request.url.includes("azk")) {
-      result = await AzkalRepository.balanceOfRepo(requestParams.account);
-    } else if (request.url.includes("xav")) {
-      result = await XaverRepository.balanceOfRepo(requestParams.account);
-    } else if (request.url.includes("xgm")) {
-      result = await XGameRepository.balanceOfRepo(requestParams.account);
-    } else if (request.url.includes("ixon")) {
-      result = await IXONRepository.balanceOfRepo(requestParams.account);
-    } else if (request.url.includes("ixav")) {
-      result = await IXAVRepository.balanceOfRepo(requestParams.account);
-    }
-    if (result instanceof Error) {
-      throw result;
-    }
-    return await reply.send(result);
-  } catch (error: any) {
-    reply.status(500).send('Internal Server Error: ' + error);
-  }
-};
+	request: FastifyRequest,
+	reply: FastifyReply
+  ) => {
+	try {
+	  const requestParams = request.params as IBalanceOfRequestParams;
+	  if (!requestParams || !requestParams.account) {
+		return reply.badRequest("Invalid request parameter. Required fields: 'account'");
+	  }
+	  const repositoryMap: Record<string, any> = {
+		azk: AzkalRepository.balanceOfRepo,
+		xav: XaverRepository.balanceOfRepo,
+		xgm: XGameRepository.balanceOfRepo,
+		ixon: IXONRepository.balanceOfRepo,
+		ixav: IXAVRepository.balanceOfRepo,
+	  };
+	  const identifier = Object.keys(repositoryMap).find((key) =>
+		new RegExp(`/${key}/`).test(request.url)
+	  );
+	  if (!identifier) {
+		return reply.badRequest("Invalid URL. No matching repository found.");
+	  }
+	  const result = await repositoryMap[identifier](requestParams.account);
+	  if (result instanceof Error) {
+		throw result;
+	  }
+	  return reply.send(result);
+	} catch (error: any) {
+	  reply.status(500).send("Internal Server Error: " + error);
+	}
+  };
+  
 
 export const airdropController = async (
   request: FastifyRequest,
