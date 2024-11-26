@@ -55,6 +55,7 @@ export const startController = async (
 				if (account instanceof Error) {
 					job.stop();
 					isJobRunning = false;
+					errors.add(String(account))
 					throw account;
 				}
 				account = Array.from(new Set(account));
@@ -63,6 +64,7 @@ export const startController = async (
 					if (result instanceof Error) {
 						job.stop();
 						isJobRunning = false;
+						errors.add(String(result))
 						throw result;
 					}
 					lastEndTimestamp = now;
