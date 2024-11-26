@@ -15,13 +15,13 @@ import {
   IResponseSuccessful, 
   IResponseError, 
 } from '../../schemas/AssetSchemas';
-import { mint } from '../../swaggerschema/ixon/mint';
-import { transfer } from '../../swaggerschema/ixon/transfer';
-import { burn } from '../../swaggerschema/ixon/burn';
-import { totalSupply } from '../../swaggerschema/ixon/totalSupply';
-import { balanceOf } from '../../swaggerschema/ixon/balanceOf';
+import { mint } from '../../swaggerschema/ixav/mint';
+import { transfer } from '../../swaggerschema/ixav/transfer';
+import { burn } from '../../swaggerschema/ixav/burn';
+import { totalSupply } from '../../swaggerschema/ixav/totalSupply';
+import { balanceOf } from '../../swaggerschema/ixav/balanceOf';
 
-const ixon: FastifyPluginAsync = async (fastify, opts) => {
+const ixav: FastifyPluginAsync = async (fastify, opts) => {
   fastify.post<{
     Querystring: IMintRequestBody;
     Reply: IResponseSuccessful | IResponseError;
@@ -68,4 +68,4 @@ const ixon: FastifyPluginAsync = async (fastify, opts) => {
   );
 };
 
-export default ixon;
+export default ixav;

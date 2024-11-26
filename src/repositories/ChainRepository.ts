@@ -12,6 +12,7 @@ import {
 import abi from '../smartcontracts/xode/transfer_controller.json';
 import axios from 'axios';
 import IXONRepository from './IXONRepository';
+import IXAVRepository from './IXAVRepository';
 import { api } from '../modules/InitializeAPI';
 import { TOKENS } from '../constants/index';
 
@@ -315,18 +316,21 @@ export default class ChainRepository {
     const xav_instance = new XaverRepository();
     const xgm_instance = new XGameRepository();
     const ixon_instance = new IXONRepository();
+    const ixav_instance = new IXAVRepository();
     try {
       const xonPrice: number = parseFloat(xon_instance.xonPrice);
       const azkPrice: number = parseFloat(azk_instance.azkPrice);
       const xavPrice: number = parseFloat(xav_instance.xavPrice);
       const xgmPrice: number = parseFloat(xgm_instance.xgmPrice);
       const ixonPrice: number = parseFloat(ixon_instance.ixonPrice);
+      const ixavPrice: number = parseFloat(ixav_instance.ixavPrice);
       const prices = {
         XON: xonPrice * data.rate,
         AZK: azkPrice * data.rate,
         XAV: xavPrice * data.rate,
         XGM: xgmPrice * data.rate,
-        IXON: ixonPrice * data.rate
+        IXON: ixonPrice * data.rate,
+        IXAV: ixavPrice * data.rate
       };
       return { currency: data.currency, prices };
     } catch (error: any) {

@@ -67,7 +67,7 @@ dist
 # env/secrets
 .env
 .env.example
-development.env
-staging.env
-production.env
+.env.development
+.env.staging
+.env.production
 metadata

@@ -40,6 +40,7 @@ export const token_prices = {
                         XAV: { type: 'number' },
                         XGM: { type: 'number' },
                         IXON: { type: 'number' },
+                        IXAV: { type: 'number' },
                     }, 
                 },
             },

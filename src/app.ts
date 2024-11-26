@@ -102,6 +102,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 				{ name: 'XGame Utility Token', description: 'XGM related end-points to transact and query on chain\'s asset' },
 				{ name: 'Chain', description: 'Polkadot JS related end-points to transact and query on blockchain' },
 				{ name: 'Private XON Token', description: 'IXON related end-points to transact and query on chain\'s asset' },
+				{ name: 'Private XAV Token', description: 'IXAV related end-points to transact and query on chain\'s asset' },
 			],
 			definitions: {},
 			securityDefinitions: {

@@ -7,17 +7,17 @@ import {
 } from '../schemas/AssetSchemas';
 import { api } from '../modules/InitializeAPI';
 
-export default class AzkalRepository {
-  assetId = process.env.AZK_ASSET_ID as string ?? '3';
-  azkPrice = '0';
-  azkImage = 'https://bafkreigvkyppffmoywmyctdhnjqearugk4laorzjtsyfnanljcwdhzywky.ipfs.w3s.link/';
+export default class IXAVRepository {
+  assetId = process.env.IXAV_ASSET_ID as string ?? '5';
+  ixavPrice = '0';
+  ixavImage = 'https://bafybeidcgg2scf2g42ztbpvi6dkjckgxtbp36mvpvys7yaizpdde6zigma.ipfs.dweb.link/';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;
 
   static async mintRepo(data: IMintRequestBody) {
     console.log('mintRepo function was called');
-    const instance = new AzkalRepository();
+    const instance = new IXAVRepository();
     try {
       const metadata: any = await api.query.assets.metadata(
         instance.assetId,
@@ -44,7 +44,7 @@ export default class AzkalRepository {
 
   static async transferRepo(data: ITransferRequestBody) {
     console.log('transferRepo function was called');
-    const instance = new AzkalRepository();
+    const instance = new IXAVRepository();
     try {
       const metadata: any = await api.query.assets.metadata(
         instance.assetId,
@@ -63,7 +63,9 @@ export default class AzkalRepository {
           value
         ]
       );
-      if (result instanceof Error) return result;
+      if (result instanceof Error) {
+        return result;
+      }
       return { hash: result.toHex() };
     } catch (error: any) {
       return Error(error || 'transferRepo error occurred.');
@@ -72,7 +74,7 @@ export default class AzkalRepository {
 
   static async burnRepo(data: IBurnRequestBody) {
     console.log('burnRepo function was called');
-    const instance = new AzkalRepository();
+    const instance = new IXAVRepository();
     try {
       const metadata: any = await api.query.assets.metadata(
         instance.assetId,
@@ -99,7 +101,7 @@ export default class AzkalRepository {
 
   static async balanceOfRepo(account: string) {
     console.log('balanceOfRepo function was called');
-    const instance = new AzkalRepository();
+    const instance = new IXAVRepository();
     try {
       const [accountInfo, metadata] = await Promise.all([
         api.query.assets.account(instance.assetId, account),
@@ -117,16 +119,16 @@ export default class AzkalRepository {
           balance: balances,
           symbol: symbol.toHuman(),
           name: name.toHuman(),
-          price: instance.azkPrice,
-          image: instance.azkImage,
+          price: instance.ixavPrice,
+          image: instance.ixavImage,
         };
       } else {
         return {
           balance: '0.0000',
-          symbol: 'AZK',
-          name: 'Azkal',
-          price: instance.azkPrice,
-          image: instance.azkImage,
+          symbol: 'IXAV',
+          name: 'Private XAV',
+          price: instance.ixavPrice,
+          image: instance.ixavImage,
         };
       };
     } catch (error: any) {
@@ -136,7 +138,7 @@ export default class AzkalRepository {
   
   static async totalSupplyRepo() {
     console.log('totalSupplyRepo function was called');
-    const instance = new AzkalRepository();
+    const instance = new IXAVRepository();
     try {
       const assetInfo: any = await api.query.assets.asset(
         instance.assetId
@@ -155,15 +157,15 @@ export default class AzkalRepository {
 
   static async getAssetMetadataRepo() {
     console.log('getAssetMetadataRepo function was called');
-    const instance = new AzkalRepository();
+    const instance = new IXAVRepository();
     try {
       const metadata = await api.query.assets.metadata(instance.assetId);
       return {
         name: metadata.toHuman().name,
         symbol: metadata.toHuman().symbol,
         decimals: metadata.toHuman().decimals,
-        image: instance.azkImage,
-        price: instance.azkPrice,
+        image: instance.ixavImage,
+        price: 0,
       }
     } catch (error: any) {
       return Error(error || 'getAssetMetadataRepo error occurred.');
