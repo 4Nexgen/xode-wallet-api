@@ -19,10 +19,10 @@ export const manualController = async (
 	try {
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
-		MarketingRepository.getBlockHash();
 		const token = (request.headers.authorization as string).slice(7);
 		const query = request.query as { start: string, end: string };
 		if (!query || !query.start || !query.end) return reply.badRequest('Missing or invalid query.');
+		MarketingRepository.getBlockHash();
 		let account = await getAccountData(token, Number(query.start), Number(query.end));
 		if (account instanceof Error) throw account;
 		account = Array.from(new Set(account));

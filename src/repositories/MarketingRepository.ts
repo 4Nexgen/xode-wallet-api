@@ -42,8 +42,7 @@ export default class MarketingRepository {
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
-			const amount = Number(process.env.TOKEN_AMOUNT as string);
-			const value = amount * 10 ** chainDecimals;
+			const value = 1 * 10 ** chainDecimals;
 			let nonce = await api.rpc.system.accountNextIndex(owner.address);
 			let index = 0;
 			while (index < data.length) {
