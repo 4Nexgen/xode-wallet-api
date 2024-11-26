@@ -19,7 +19,17 @@ const app: FastifyPluginAsync<AppOptions> = async (
 	opts
 ): Promise<void> => {
   	// Place here your custom code!
-	// require('dotenv').config({ path: `${process.env.NODE_ENV}.env` });
+	// require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
+	const fs = require('fs');
+	const dotenv = require('dotenv');
+	dotenv.config({ path: '.env' });
+	const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
+	if (fs.existsSync(envFile)) {
+		const envConfig = dotenv.parse(fs.readFileSync(envFile));
+		for (const key in envConfig) {
+			process.env[key] = envConfig[key];
+		}
+	}
 	await cryptoWaitReady();
 	const ALLOWED_DOMAINS = (process.env.ALLOWED_DOMAINS as string).split(',');
 	fastify.register(FastifyCors, {
