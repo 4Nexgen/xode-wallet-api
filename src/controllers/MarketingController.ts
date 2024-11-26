@@ -11,6 +11,7 @@ import {
 let job: ScheduledTask;
 let isJobRunning: boolean = false;
 let lastEndTimestamp: number = 1730181309000; // Tuesday, October 29, 2024 1:55:09
+let errors: Set<string> = new Set();
 
 export const manualController = async (
 	request: FastifyRequest,
@@ -84,6 +85,7 @@ export const startController = async (
 	} catch (error: any) {
 		if (job) job.stop();
 		isJobRunning = false;
+		errors.add(String(error))
 		reply.status(500).send('Internal Server Error: ' + error);
 	}
 };
@@ -156,6 +158,17 @@ export const marketingFeedbackController = async (
 		const result = await MarketingRepository.sendTokenByFeedbackRepo(body, token);
 		if (result instanceof Error) throw result;
 		return reply.send(result);
+	} catch (error: any) {
+		reply.status(500).send('Internal Server Error: ' + error);
+	}
+};
+
+export const getErrorsController = async (
+	request: FastifyRequest,
+	reply: FastifyReply
+) => {
+	try {
+		return reply.send(errors);
 	} catch (error: any) {
 		reply.status(500).send('Internal Server Error: ' + error);
 	}
