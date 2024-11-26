@@ -20,6 +20,17 @@ const app: FastifyPluginAsync<AppOptions> = async (
 ): Promise<void> => {
   	// Place here your custom code!
 	// require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
+	const fs = require('fs');
+	const dotenv = require('dotenv');
+	dotenv.config({ path: '.env' });
+	console.log(`|${process.env.NODE_ENV}|`)
+	const envFile = `.env.${process.env.NODE_ENV || 'staging'}`;
+	if (fs.existsSync(envFile)) {
+		const envConfig = dotenv.parse(fs.readFileSync(envFile));
+		for (const key in envConfig) {
+			process.env[key] = envConfig[key];
+		}
+	}
 	await cryptoWaitReady();
 	const ALLOWED_DOMAINS = (process.env.ALLOWED_DOMAINS as string).split(',');
 	fastify.register(FastifyCors, {
@@ -83,7 +94,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 				description: 'Fastify swagger of XODE to smart contract.\n\n' +
 				'\n' + 'AstroChibbi: ' + process.env.ASTROCHIBBI_ADDRESS as string +
 				'\n' + 'Energy Capsule: ' + process.env.ASTRO_ENERGY_ADDRESS as string +
-				'\n' + 'Astro Economy: ' + process.env.ASTRO_ECONOMY_ADDRESS as string,
+				'\n' + 'Astro Economy: |' + process.env.NODE_ENV + '|',
 				version: '0.1.3'
 			},
 			externalDocs: {
