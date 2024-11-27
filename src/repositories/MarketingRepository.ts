@@ -20,19 +20,23 @@ export default class MarketingRepository {
 	ownerSeed = process.env.MARKETING_SEED as string;
 
 	static getBlockHash = async () => {
-		if (isRunning) return;
-		isRunning = true;
-		api.rpc.chain.subscribeNewHeads(async (header) => {
-            const blockHash = header.hash;
-            const signedBlock = await api.rpc.chain.getBlock(blockHash);
-            for (const extrinsic of signedBlock.block.extrinsics) {
-				const tx_hash = extrinsic.hash.toHex();
-                if (processedAccounts.has(tx_hash)) {
-					this.updateBlockHash(tx_hash, blockHash.toString());
-					processedAccounts.delete(tx_hash);
-                }
-            }
-        });
+		try {
+			if (isRunning) return;
+			isRunning = true;
+			api.rpc.chain.subscribeNewHeads(async (header) => {
+				const blockHash = header.hash;
+				const signedBlock = await api.rpc.chain.getBlock(blockHash);
+				for (const extrinsic of signedBlock.block.extrinsics) {
+					const tx_hash = extrinsic.hash.toHex();
+					if (processedAccounts.has(tx_hash)) {
+						this.updateBlockHash(tx_hash, blockHash.toString());
+						processedAccounts.delete(tx_hash);
+					}
+				}
+			});
+		} catch (error) {
+			return Error(String(error))
+		}
 	}
 
 	static async sendTokenRepo(data: WalletResponse[], token: string) {
@@ -42,7 +46,8 @@ export default class MarketingRepository {
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
-			const value = 1 * 10 ** chainDecimals;
+			const token_amount = Number(process.env.TOKEN_AMOUNT as string)
+			const value = token_amount * 10 ** chainDecimals;
 			let nonce = await api.rpc.system.accountNextIndex(owner.address);
 			let index = 0;
 			while (index < data.length) {
@@ -89,7 +94,8 @@ export default class MarketingRepository {
 			const chainDecimals = api.registry.chainDecimals[0];
 			const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
 			const owner = keyring.addFromUri(instance.ownerSeed);
-			const value = 1 * 10 ** chainDecimals;
+			const token_amount = Number(process.env.TOKEN_AMOUNT as string)
+			const value = token_amount * 10 ** chainDecimals;
 			const [nonce, feedback] = await Promise.all([
 				api.rpc.system.accountNextIndex(owner.address),
 				getFeedbackData(String(data.feedback_id), token)

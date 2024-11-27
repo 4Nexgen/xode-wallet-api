@@ -46,7 +46,8 @@ export const startController = async (
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		const token = (request.headers.authorization as string).slice(7);
-		MarketingRepository.getBlockHash();
+		const result = MarketingRepository.getBlockHash();
+		if (result instanceof Error) throw result;
 		if (!job) {
 			job = cron.schedule('* * * * *', async () => { // 0 * * * * call every hour
 				const now = Date.now();
