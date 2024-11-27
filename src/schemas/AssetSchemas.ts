@@ -29,11 +29,6 @@ export interface IBurnRequestBody {
   value: number;
 }
 
-// ----- AIRDROP XGM -----
-export interface IAirdropAssetRequestBody {
-  account: string[];
-}
-
 // ----- SUCCESS & ERROR -----
 export interface IResponseSuccessful {
   status: number;

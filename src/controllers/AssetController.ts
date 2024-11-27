@@ -4,13 +4,10 @@ import {
   ITransferRequestBody,
   IBurnRequestBody,
   IBalanceOfRequestParams,
-  IAirdropAssetRequestBody,
 } from '../schemas/AssetSchemas';
 import AzkalRepository from '../repositories/AzkalRepository';
 import XaverRepository from '../repositories/XaverRepository';
 import XGameRepository from '../repositories/XGameRepository';
-import ChainRepository from '../repositories/ChainRepository';
-import WalletRepository from '../repositories/WalletRepository';
 import IXONRepository from '../repositories/IXONRepository';
 import IXAVRepository from '../repositories/IXAVRepository';
 
@@ -176,47 +173,5 @@ export const balanceOfController = async (
 	} catch (error: any) {
 	  reply.status(500).send("Internal Server Error: " + error);
 	}
-  };
-  
-
-export const airdropController = async (
-  request: FastifyRequest,
-  reply: FastifyReply
-) => {
-  try {
-    const query: any = request.query;
-    let { account }: { account: string[] } = request.body as IAirdropAssetRequestBody;
-    let wallets: any[] = [];
-    if (!Array.isArray(account)) {
-      account = [];
-    }
-    if (query.created_at !== undefined || query.start !== undefined) {
-      wallets = await WalletRepository.getWallets(query);
-      wallets.forEach(wallet => {
-        account.push(wallet.wallet_address);
-      });
-    }
-    account = Array.from(new Set(account));
-    if (Array.isArray(account) && account.length <= 0) {
-      return reply.badRequest("Invalid request body. Required field at least one 'account'");
-    }
-    let result;
-    if (request.url.includes("azk")) {
-      result = await AzkalRepository.airdropAZKRepo(account);
-    } else if (request.url.includes("xgm")) {
-      result = await XGameRepository.airdropXGMRepo(account);
-    } else if (request.url.includes("ixon")) {
-      result = await IXONRepository.airdropIXONRepo(account);
-    } else if (request.url.includes("ixav")) {
-      result = await IXAVRepository.airdropIXAVRepo(account);
-    } else if (request.url.includes("chain")) {
-      result = await ChainRepository.airdropXONRepo(account);
-    }
-    if (result instanceof Error) {
-      throw result;
-    }
-    return await reply.send(result);
-  } catch (error: any) {
-    reply.status(500).send('Internal Server Error: ' + error);
-  }
 };
+  

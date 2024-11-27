@@ -41,7 +41,7 @@ export async function getAccountData(
 			{
 				params,
 				headers: {
-                    Authorization: `Bearer ${token}`,
+                    // Authorization: `Bearer ${token}`,
 					Token: result.token
                 },
 			}
@@ -64,7 +64,7 @@ export async function updateAccountData(
 			{ did_receive: true },
 			{
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    // Authorization: `Bearer ${token}`,
 					Token: result.token
                 },
             }
@@ -86,7 +86,7 @@ export async function getFeedbackData(
             `${BASE_URL}/feed_back/getFeedBack/${id}`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    // Authorization: `Bearer ${token}`,
 					Token: result.token
                 },
             }

@@ -5,7 +5,6 @@ import {
   burnController,
   totalSupplyController,
   balanceOfController,
-  airdropController,
 } from '../../controllers/AssetController';
 import { 
   IBalanceOfRequestParams, 
@@ -13,7 +12,6 @@ import {
   IMintRequestBody, 
   ITotalSupplyRequestParams, 
   ITransferRequestBody,
-  IAirdropAssetRequestBody,
   IResponseSuccessful, 
   IResponseError, 
 } from '../../schemas/AssetSchemas';
@@ -67,14 +65,6 @@ const ixon: FastifyPluginAsync = async (fastify, opts) => {
     '/balanceof/:account',
     { schema: balanceOf },
     balanceOfController
-  );
-
-  fastify.post<{
-    Querystring: IAirdropAssetRequestBody;
-    Reply: IResponseSuccessful | IResponseError;
-  }>(
-    '/airdrop',
-    airdropController
   );
 };
 

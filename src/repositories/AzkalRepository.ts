@@ -5,12 +5,10 @@ import {
   ITransferRequestBody,
   IBurnRequestBody,
 } from '../schemas/AssetSchemas';
-import { Keyring } from '@polkadot/api';
 import { api } from '../modules/InitializeAPI';
 
 export default class AzkalRepository {
   assetId = process.env.AZK_ASSET_ID as string ?? '3';
-  ownerSeed = process.env.AZK_SEED as string;
   azkPrice = '0';
   azkImage = 'https://bafkreigvkyppffmoywmyctdhnjqearugk4laorzjtsyfnanljcwdhzywky.ipfs.w3s.link/';
   // These are required and changeable
@@ -169,43 +167,6 @@ export default class AzkalRepository {
       }
     } catch (error: any) {
       return Error(error || 'getAssetMetadataRepo error occurred.');
-    }
-  }
-
-  static async airdropAZKRepo(data: any) {
-    console.log('airdropAZKRepo function was called');
-    const instance = new AzkalRepository();
-    try {
-      const metadata: any = await api.query.assets.metadata(
-        instance.assetId,
-      );
-      if (metadata.toHuman() == null) {
-        return Error('No corresponding asset found.');
-      }
-      const keyring = new Keyring({ type: 'sr25519', ss58Format: 0 });
-      const owner = keyring.addFromUri(instance.ownerSeed);
-      const { decimals } = metadata.toJSON();
-      const value = 1000 * 10 ** decimals;
-      let nonce = await api.rpc.system.accountNextIndex(owner.address);
-      let index = 0;
-      while (index < data.length) {
-        const batch = data.slice(index, index + 1);
-        for (const address of batch) {
-          console.log(`Index: ${index} - `, address);
-          const tx = api.tx.assets.transfer(instance.assetId, address, value); 
-          await tx.signAndSend(owner, { nonce });
-        }
-        index += 1;
-        const newNonce = await api.rpc.system.accountNextIndex(owner.address);
-        if (newNonce.gt(nonce)) {
-          nonce = newNonce;
-        }
-      }
-      const tx = api.tx.assets.freezeAsset(instance.assetId); 
-      await tx.signAndSend(owner, { nonce });
-      return;
-    } catch (error: any) {
-      return Error(error || 'airdropAZKRepo error occurred.');
     }
   }
 }

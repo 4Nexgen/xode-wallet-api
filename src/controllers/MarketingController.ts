@@ -11,6 +11,7 @@ import {
 let job: ScheduledTask;
 let isJobRunning: boolean = false;
 let lastEndTimestamp: number = 1730181309000; // Tuesday, October 29, 2024 1:55:09
+let errors: Set<string> = new Set();
 
 export const manualController = async (
 	request: FastifyRequest,
@@ -22,6 +23,7 @@ export const manualController = async (
 		const token = (request.headers.authorization as string).slice(7);
 		const query = request.query as { start: string, end: string };
 		if (!query || !query.start || !query.end) return reply.badRequest('Missing or invalid query.');
+		MarketingRepository.getBlockHash();
 		let account = await getAccountData(token, Number(query.start), Number(query.end));
 		if (account instanceof Error) throw account;
 		account = Array.from(new Set(account));
@@ -44,7 +46,8 @@ export const startController = async (
 		const isValid = await marketingAuth(request);
 		if (!isValid) return reply.unauthorized('Access unauthorized.');
 		const token = (request.headers.authorization as string).slice(7);
-		MarketingRepository.getBlockHash();
+		const result = MarketingRepository.getBlockHash();
+		if (result instanceof Error) throw result;
 		if (!job) {
 			job = cron.schedule('* * * * *', async () => { // 0 * * * * call every hour
 				const now = Date.now();
@@ -53,6 +56,7 @@ export const startController = async (
 				if (account instanceof Error) {
 					job.stop();
 					isJobRunning = false;
+					errors.add(String(account))
 					throw account;
 				}
 				account = Array.from(new Set(account));
@@ -61,6 +65,7 @@ export const startController = async (
 					if (result instanceof Error) {
 						job.stop();
 						isJobRunning = false;
+						errors.add(String(result))
 						throw result;
 					}
 					lastEndTimestamp = now;
@@ -83,6 +88,7 @@ export const startController = async (
 	} catch (error: any) {
 		if (job) job.stop();
 		isJobRunning = false;
+		errors.add(String(error))
 		reply.status(500).send('Internal Server Error: ' + error);
 	}
 };
@@ -155,6 +161,17 @@ export const marketingFeedbackController = async (
 		const result = await MarketingRepository.sendTokenByFeedbackRepo(body, token);
 		if (result instanceof Error) throw result;
 		return reply.send(result);
+	} catch (error: any) {
+		reply.status(500).send('Internal Server Error: ' + error);
+	}
+};
+
+export const getErrorsController = async (
+	request: FastifyRequest,
+	reply: FastifyReply
+) => {
+	try {
+		return reply.send(errors);
 	} catch (error: any) {
 		reply.status(500).send('Internal Server Error: ' + error);
 	}

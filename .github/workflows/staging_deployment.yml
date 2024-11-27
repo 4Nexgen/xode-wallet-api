@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_HUB_NAMESPACE }}/xode-wallet-api:latest .
+        run: docker build --build-arg NODE_ENV=staging -t ${{ secrets.DOCKER_HUB_NAMESPACE }}/xode-wallet-api:latest .
       - name: Push image to DockerHub
         run: |
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
