@@ -165,14 +165,3 @@ export const marketingFeedbackController = async (
 		reply.status(500).send('Internal Server Error: ' + error);
 	}
 };
-
-export const getErrorsController = async (
-	request: FastifyRequest,
-	reply: FastifyReply
-) => {
-	try {
-		return reply.send(errors);
-	} catch (error: any) {
-		reply.status(500).send('Internal Server Error: ' + error);
-	}
-};

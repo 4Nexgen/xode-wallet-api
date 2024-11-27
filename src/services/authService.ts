@@ -2,11 +2,13 @@ import { signatureVerify } from '@polkadot/util-crypto';
 import { Keyring } from '@polkadot/keyring';
 import { FastifyRequest } from 'fastify';
 import CryptoJS from 'crypto-js';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 export async function marketingAuth(
 	request: FastifyRequest,
 ): Promise<boolean | Error> {
     try {
+		await cryptoWaitReady();
 		const tokenHeader = request.headers.token as string;
 		const token_key = process.env.TOKEN_KEY as string;
 		const seed = process.env.MARKETING_SEED as string;
@@ -29,13 +31,14 @@ export async function marketingAuth(
     }
 }
 
-export function signMessage(
+export async function signMessage(
 	message: string,
-): {
-    is_valid: boolean,
-    token: string
-} {
+): Promise<{
+	is_valid: boolean;
+	token: string;
+}> {
     try {
+		await cryptoWaitReady();
 		const seed = process.env.MARKETING_SEED as string;
 		const keyring = new Keyring({ type: 'sr25519' });
 		const pair = keyring.addFromMnemonic(seed);

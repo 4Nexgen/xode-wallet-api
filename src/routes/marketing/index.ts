@@ -10,7 +10,6 @@ import {
 	statusController,
 	marketingWalletController,
 	marketingFeedbackController,
-	getErrorsController,
 } from '../../controllers/MarketingController';
 
 const marketing: FastifyPluginAsync = async (fastify, opts) => {
@@ -60,14 +59,6 @@ const marketing: FastifyPluginAsync = async (fastify, opts) => {
 	}>(
 		'/feedback',
 		marketingFeedbackController
-	);
-
-	fastify.get<{
-		Querystring: FastifyRequest;
-		Reply: FastifyReply;
-	}>(
-		'/errors',
-		getErrorsController
 	);
 };
 

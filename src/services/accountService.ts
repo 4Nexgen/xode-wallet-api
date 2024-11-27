@@ -30,7 +30,7 @@ export async function getAccountData(
 	start?: number,
 	end?: number
 ): Promise<WalletResponse[] | Error> {
-	const result = signMessage('marketing');
+	const result = await signMessage('marketing');
 	if (!result.is_valid) return Error('Invalid signature.');
     try {
 		const params: { start?: number; end?: number } = {};
@@ -56,7 +56,7 @@ export async function updateAccountData(
 	wallet: string,
 	token: string
 ): Promise<UpdateResponse | Error> {
-	const result = signMessage('marketing');
+	const result = await signMessage('marketing');
 	if (!result.is_valid) return Error('Invalid signature.');
     try {
         const response = await axios.put<{ data: UpdateResponse }>(
@@ -79,7 +79,7 @@ export async function getFeedbackData(
 	id: string,
 	token: string
 ): Promise<FeedbackResponse | Error> {
-	const result = signMessage('marketing');
+	const result = await signMessage('marketing');
 	if (!result.is_valid) return Error('Invalid signature.');
     try {
         const response = await axios.get<{ data: FeedbackResponse }>(
