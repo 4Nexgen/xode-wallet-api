@@ -11,7 +11,6 @@ import {
 let job: ScheduledTask;
 let isJobRunning: boolean = false;
 let lastEndTimestamp: number = 1730181309000; // Tuesday, October 29, 2024 1:55:09
-let errors: Set<string> = new Set();
 
 export const manualController = async (
 	request: FastifyRequest,
@@ -49,7 +48,7 @@ export const startController = async (
 		const result = MarketingRepository.getBlockHash();
 		if (result instanceof Error) throw result;
 		if (!job) {
-			job = cron.schedule('* * * * *', async () => { // 0 * * * * call every hour
+			job = cron.schedule('*/5 * * * *', async () => { // 0 * * * * call every hour
 				const now = Date.now();
 				const startTimestamp = lastEndTimestamp;
 				let account = await getAccountData(token, startTimestamp, now);
@@ -58,7 +57,6 @@ export const startController = async (
 				if (account instanceof Error) {
 					job.stop();
 					isJobRunning = false;
-					errors.add(String(account))
 					throw account;
 				}
 				account = Array.from(new Set(account));
@@ -69,7 +67,6 @@ export const startController = async (
 					if (result instanceof Error) {
 						job.stop();
 						isJobRunning = false;
-						errors.add(String(result))
 						throw result;
 					}
 					lastEndTimestamp = now;
@@ -95,7 +92,6 @@ export const startController = async (
 	} catch (error: any) {
 		if (job) job.stop();
 		isJobRunning = false;
-		errors.add(String(error))
 		reply.status(500).send('Internal Server Error: ' + error);
 	}
 };
