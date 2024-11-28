@@ -82,6 +82,7 @@ export const startController = async (
 				timezone: 'Asia/Manila',
 			});
 			job.start();
+			if (!job) reply.status(500).send('Scheduled job failed to start.');
 			isJobRunning = true;
 			reply.send({ message: 'Scheduled job started successfully.' });
 		} else if (!isJobRunning) {
