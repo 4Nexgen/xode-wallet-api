@@ -32,8 +32,8 @@ export async function marketingAuth(
 export function signMessage(
 	message: string,
 ): {
-    is_valid: boolean,
-    token: string
+	is_valid: boolean;
+	token: string;
 } {
     try {
 		const seed = process.env.MARKETING_SEED as string;

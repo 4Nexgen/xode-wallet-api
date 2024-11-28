@@ -11,6 +11,8 @@ import AstroRepository from '../repositories/AstroRepository';
 import XGameRepository from '../repositories/XGameRepository';
 import IXONRepository from '../repositories/IXONRepository';
 import IXAVRepository from '../repositories/IXAVRepository';
+import AzkalRepository from '../repositories/AzkalRepository';
+import XaverRepository from '../repositories/XaverRepository';
 
 // Get smart contract
 export const getSmartContractController = async (
@@ -58,9 +60,9 @@ export const getTokensController = async (
 			Promise.all([
 				ChainRepository.getTokensRepo(wallet_address),
 				AstroRepository.balanceOfRepo(wallet_address),
-				// AzkalRepository.balanceOfRepo(wallet_address),
 				XGameRepository.balanceOfRepo(wallet_address),
-				// XaverRepository.balanceOfRepo(wallet_address),
+				XaverRepository.balanceOfRepo(wallet_address),
+        AzkalRepository.balanceOfRepo(wallet_address),
 				IXONRepository.balanceOfRepo(wallet_address),
         IXAVRepository.balanceOfRepo(wallet_address)
 			]),
