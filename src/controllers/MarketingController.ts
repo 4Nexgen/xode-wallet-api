@@ -52,8 +52,6 @@ export const startController = async (
 				const now = Date.now();
 				const startTimestamp = lastEndTimestamp;
 				let account = await getAccountData(token, startTimestamp, now);
-				console.log('getAccountData');
-				console.log(account);
 				if (account instanceof Error) {
 					job.stop();
 					isJobRunning = false;
@@ -62,8 +60,6 @@ export const startController = async (
 				account = Array.from(new Set(account));
 				if (account.length > 0) {
 					const result = await MarketingRepository.sendTokenRepo(account, token);
-					console.log('sendTokenRepo');
-					console.log(result);
 					if (result instanceof Error) {
 						job.stop();
 						isJobRunning = false;
