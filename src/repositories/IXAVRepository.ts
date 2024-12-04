@@ -10,7 +10,7 @@ import { api } from '../modules/InitializeAPI';
 export default class IXAVRepository {
   assetId = process.env.IXAV_ASSET_ID as string ?? '5';
   ixavPrice = '0';
-  ixavImage = 'https://bafybeidcgg2scf2g42ztbpvi6dkjckgxtbp36mvpvys7yaizpdde6zigma.ipfs.dweb.link/';
+  ixavImage = 'https://images.ctfassets.net/ceadegliwn46/1xQKQs9LEISyl19X8xgRuB/1c818f4235a6dc806892f06b72ac9d31/ixav.svg';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;
