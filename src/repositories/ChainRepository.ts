@@ -19,7 +19,7 @@ import { TOKENS } from '../constants/index';
 export default class ChainRepository {
   ownerSeed = process.env.ASTROCHIBBI_SEED as string;
   xonPrice = '0';
-  xonImage = 'https://images.ctfassets.net/ceadegliwn46/2rhSJTE0EsVho2ze5xl7df/e89d01059add0ce3d4be2848cda19883/xon.svg';
+  xonImage = 'https://images.ctfassets.net/ceadegliwn46/1XkhYmHoaXrFZS5kif5KeB/a53a7b5b145ecdcccf90aa0c06caaa64/xon.png';
   abi = require("./../smartcontracts/astrochibbi/astro_nft.json");
 
   static async getSmartContractRepo() {

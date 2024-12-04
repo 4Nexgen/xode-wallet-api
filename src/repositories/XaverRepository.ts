@@ -10,7 +10,7 @@ import { api } from '../modules/InitializeAPI';
 export default class XaverRepository {
   assetId = process.env.XAV_ASSET_ID as string ?? '2';
   xavPrice = '0';
-  xavImage = 'https://images.ctfassets.net/ceadegliwn46/6Sa0t9jTpDac1zRf8DMyf2/0b5d34305786e5471e8e286737d0de04/xav.svg';
+  xavImage = 'https://images.ctfassets.net/ceadegliwn46/78BXsKC6qnOpngco4TKgi8/44054b1cc005075851e60fd0051ddfe3/xav.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;

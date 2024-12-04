@@ -12,7 +12,7 @@ export default class AstroRepository {
   economyAddress = process.env.ASTRO_ECONOMY_ADDRESS as string;
   ownerSeed = process.env.ASTROCHIBBI_SEED as string;
   astroPrice = '0.1';
-  astroImage = 'https://images.ctfassets.net/ceadegliwn46/2pL8wb6KVU6x4efWvlgAo2/ee16376b699722ba09560266ad4ffbe2/astro.png';
+  astroImage = 'https://images.ctfassets.net/ceadegliwn46/2pL8wb6KVU6x4efWvlgAo2/22ea7f163891c2bc166ba75ce0d45a2b/astro.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;

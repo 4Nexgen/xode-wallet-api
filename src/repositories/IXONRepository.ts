@@ -10,7 +10,7 @@ import { api } from '../modules/InitializeAPI';
 export default class IXONRepository {
   assetId = process.env.IXON_ASSET_ID as string ?? '4';
   ixonPrice = '0';
-  ixonImage = 'https://images.ctfassets.net/ceadegliwn46/7JhxrJWM8aZu9t7C2LxNak/eca78b577009ac8f20d7fea71214c87e/ixon.svg';
+  ixonImage = 'https://images.ctfassets.net/ceadegliwn46/64XCcmuKNf92zmjXoNEgtH/150eeac275c0083f710cef50bc986532/ixon.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;

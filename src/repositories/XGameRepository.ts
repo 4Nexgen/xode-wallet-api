@@ -10,7 +10,7 @@ import { api } from '../modules/InitializeAPI';
 export default class XGameRepository {
   assetId = process.env.XGM_ASSET_ID as string ?? '1';
   xgmPrice = '0';
-  xgmImage = 'https://images.ctfassets.net/ceadegliwn46/5UWr9i0b6sd3hrNuf38YzP/58fd5659d4a2483d2302e04f90ed355c/xgm.svg';
+  xgmImage = 'https://images.ctfassets.net/ceadegliwn46/1RRgIm4VppE9UaNsFsnWQu/159c2be106823eb362f4f73049fa3b08/xgm.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;
