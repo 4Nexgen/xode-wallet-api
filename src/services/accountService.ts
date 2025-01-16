@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { signMessage } from './authService';
 
-const BASE_URL = process.env.PRODUCT_API;
+const BASE_URL = process.env.XGAME_API;
 
 export interface WalletResponse {
   wallet_address: string;
