@@ -34,11 +34,13 @@ export async function getAccountData(
   if (!result.is_valid) return Error('Invalid signature.');
   try {
     const params: {
+      pageNumber?: number;
+      pageLimit?: number;
       start?: number;
       end?: number;
       did_receive?: boolean;
       verified?: boolean;
-    } = {};
+    } = { pageNumber: 1, pageLimit: 100 };
     if (start !== undefined) params.start = start;
     if (end !== undefined) params.end = end;
     params.did_receive = false;
@@ -55,6 +57,7 @@ export async function getAccountData(
     );
     return response.data.result;
   } catch (error: any) {
+    console.log(error);
     return Error(error.message);
   }
 }
@@ -78,6 +81,7 @@ export async function updateAccountData(
     );
     return response.data.data;
   } catch (error: any) {
+    console.error(error);
     return Error(error.message);
   }
 }

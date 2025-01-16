@@ -93,6 +93,7 @@ export default class MarketingRepository {
       }
       return;
     } catch (error: any) {
+      console.log(error);
       return Error(error || 'sendTokenRepo error occurred.');
     }
   }

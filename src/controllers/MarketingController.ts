@@ -105,6 +105,7 @@ export const startController = async (
       reply.send({ message: 'Scheduled job is already running.' });
     }
   } catch (error: any) {
+    console.log(error);
     if (job) job.stop();
     isJobRunning = false;
     reply.status(500).send('Internal Server Error: ' + error);
