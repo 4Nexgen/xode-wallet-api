@@ -10,6 +10,9 @@ import XaverRepository from '../repositories/XaverRepository';
 import XGameRepository from '../repositories/XGameRepository';
 import IXONRepository from '../repositories/IXONRepository';
 import IXAVRepository from '../repositories/IXAVRepository';
+import IDONRepository from '../repositories/IDONRepository';
+import MPCRepository from '../repositories/MPCRepository';
+import IMPCRepository from '../repositories/IMPCRepository';
 
 export const mintController = async (
   request: FastifyRequest,
@@ -35,6 +38,12 @@ export const mintController = async (
       result = await IXONRepository.mintRepo(requestBody);
     } else if (request.url.includes("ixav")) {
       result = await IXAVRepository.mintRepo(requestBody);
+    } else if (request.url.includes("idon")) {
+      result = await IDONRepository.mintRepo(requestBody);
+    } else if (request.url.includes("mpc")) {
+      result = await MPCRepository.mintRepo(requestBody);
+    } else if (request.url.includes("impc")) {
+      result = await IMPCRepository.mintRepo(requestBody);
     }
     
     if (result instanceof Error) {
@@ -70,6 +79,12 @@ export const transferController = async (
       result = await IXONRepository.transferRepo(requestBody);
     } else if (request.url.includes("ixav")) {
       result = await IXAVRepository.transferRepo(requestBody);
+    }  else if (request.url.includes("idon")) {
+      result = await IDONRepository.transferRepo(requestBody);
+    } else if (request.url.includes("mpc")) {
+      result = await MPCRepository.transferRepo(requestBody);
+    } else if (request.url.includes("impc")) {
+      result = await IMPCRepository.transferRepo(requestBody);
     }
 
     if (result instanceof Error) {
@@ -105,6 +120,12 @@ export const burnController = async (
       result = await IXONRepository.burnRepo(requestBody);
     }  else if (request.url.includes("ixav")) {
       result = await IXAVRepository.burnRepo(requestBody);
+    } else if (request.url.includes("idon")) {
+      result = await IDONRepository.burnRepo(requestBody);
+    } else if (request.url.includes("mpc")) {
+      result = await MPCRepository.burnRepo(requestBody);
+    } else if (request.url.includes("impc")) {
+      result = await IMPCRepository.burnRepo(requestBody);
     }
     if (result instanceof Error) {
       throw result;
@@ -131,6 +152,12 @@ export const totalSupplyController = async (
       result = await IXONRepository.totalSupplyRepo();
     } else if (request.url.includes("ixav")) {
       result = await IXAVRepository.totalSupplyRepo();
+    } else if (request.url.includes("idon")) {
+      result = await IDONRepository.totalSupplyRepo();
+    } else if (request.url.includes("mpc")) {
+      result = await MPCRepository.totalSupplyRepo();
+    } else if (request.url.includes("impc")) {
+      result = await IMPCRepository.totalSupplyRepo();
     }
     if (result instanceof Error) {
       throw result;
@@ -158,6 +185,9 @@ export const balanceOfController = async (
 		xgm: XGameRepository.balanceOfRepo,
 		ixon: IXONRepository.balanceOfRepo,
 		ixav: IXAVRepository.balanceOfRepo,
+    idon: IDONRepository.balanceOfRepo,
+    mpc: MPCRepository.balanceOfRepo,
+    impc: IMPCRepository.balanceOfRepo,
 	  };
 	  const identifier = Object.keys(repositoryMap).find((key) =>
 		new RegExp(`/${key}/`).test(request.url)
