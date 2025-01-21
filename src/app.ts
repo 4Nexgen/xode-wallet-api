@@ -116,6 +116,9 @@ const app: FastifyPluginAsync<AppOptions> = async (
 				{ name: 'Chain', description: 'Polkadot JS related end-points to transact and query on blockchain' },
 				{ name: 'Private XON Token', description: 'IXON related end-points to transact and query on chain\'s asset' },
 				{ name: 'Private XAV Token', description: 'IXAV related end-points to transact and query on chain\'s asset' },
+				{ name: 'Private DON Token', description: 'IDON related end-points to transact and query on chain\'s asset' },
+				{ name: 'Manny Pacquiao Coin', description: 'MPC related end-points to transact and query on chain\'s asset' },
+				{ name: 'Private MPC Token', description: 'IMPC related end-points to transact and query on chain\'s asset' },
 			],
 			definitions: {},
 			securityDefinitions: {

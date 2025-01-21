@@ -13,6 +13,9 @@ import abi from '../smartcontracts/xode/transfer_controller.json';
 import axios from 'axios';
 import IXONRepository from './IXONRepository';
 import IXAVRepository from './IXAVRepository';
+import MPCRepository from './MPCRepository';
+import IMPCRepository from './IMPCRepository';
+import IDONRepository from './IDONRepository';
 import { api } from '../modules/InitializeAPI';
 import { TOKENS } from '../constants/index';
 
@@ -317,6 +320,9 @@ export default class ChainRepository {
     const xgm_instance = new XGameRepository();
     const ixon_instance = new IXONRepository();
     const ixav_instance = new IXAVRepository();
+    const idon_instance = new IDONRepository();
+    const mpc_instance = new MPCRepository();
+    const impc_instance = new IMPCRepository();
     try {
       const xonPrice: number = parseFloat(xon_instance.xonPrice);
       const azkPrice: number = parseFloat(azk_instance.azkPrice);
@@ -324,13 +330,19 @@ export default class ChainRepository {
       const xgmPrice: number = parseFloat(xgm_instance.xgmPrice);
       const ixonPrice: number = parseFloat(ixon_instance.ixonPrice);
       const ixavPrice: number = parseFloat(ixav_instance.ixavPrice);
+      const idonPrice: number = parseFloat(idon_instance.idonPrice);
+      const mpcPrice: number = parseFloat(mpc_instance.mpcPrice);
+      const impcPrice: number = parseFloat(impc_instance.impcPrice);
       const prices = {
         XON: xonPrice * data.rate,
         AZK: azkPrice * data.rate,
         XAV: xavPrice * data.rate,
         XGM: xgmPrice * data.rate,
         IXON: ixonPrice * data.rate,
-        IXAV: ixavPrice * data.rate
+        IXAV: ixavPrice * data.rate,
+        IDON: idonPrice * data.rate,
+        MPC: mpcPrice * data.rate,
+        IMPC: impcPrice * data.rate
       };
       return { currency: data.currency, prices };
     } catch (error: any) {
