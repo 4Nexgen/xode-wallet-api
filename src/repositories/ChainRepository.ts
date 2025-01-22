@@ -18,6 +18,7 @@ import IMPCRepository from './IMPCRepository';
 import IDONRepository from './IDONRepository';
 import { api } from '../modules/InitializeAPI';
 import { TOKENS } from '../constants/index';
+import DONRepository from './DondonRepository';
 
 export default class ChainRepository {
   ownerSeed = process.env.ASTROCHIBBI_SEED as string;
@@ -323,6 +324,7 @@ export default class ChainRepository {
     const idon_instance = new IDONRepository();
     const mpc_instance = new MPCRepository();
     const impc_instance = new IMPCRepository();
+    const don_instance = new DONRepository();
     try {
       const xonPrice: number = parseFloat(xon_instance.xonPrice);
       const azkPrice: number = parseFloat(azk_instance.azkPrice);
@@ -333,6 +335,7 @@ export default class ChainRepository {
       const idonPrice: number = parseFloat(idon_instance.idonPrice);
       const mpcPrice: number = parseFloat(mpc_instance.mpcPrice);
       const impcPrice: number = parseFloat(impc_instance.impcPrice);
+      const donPrice: number = parseFloat(don_instance.donPrice);
       const prices = {
         XON: xonPrice * data.rate,
         AZK: azkPrice * data.rate,
@@ -342,7 +345,8 @@ export default class ChainRepository {
         IXAV: ixavPrice * data.rate,
         IDON: idonPrice * data.rate,
         MPC: mpcPrice * data.rate,
-        IMPC: impcPrice * data.rate
+        IMPC: impcPrice * data.rate,
+        DON: donPrice * data.rate
       };
       return { currency: data.currency, prices };
     } catch (error: any) {

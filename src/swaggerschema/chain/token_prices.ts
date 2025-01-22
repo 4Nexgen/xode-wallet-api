@@ -44,6 +44,7 @@ export const token_prices = {
                         IDON: { type: 'number' },
                         MPC: { type: 'number' },
                         IMPC: { type: 'number' },
+                        DON: { type: 'number' },
                     }, 
                 },
             },
