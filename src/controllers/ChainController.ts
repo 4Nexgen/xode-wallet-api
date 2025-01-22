@@ -16,6 +16,7 @@ import XaverRepository from '../repositories/XaverRepository';
 import IDONRepository from '../repositories/IDONRepository';
 import MPCRepository from '../repositories/MPCRepository';
 import IMPCRepository from '../repositories/IMPCRepository';
+import DONRepository from '../repositories/DondonRepository';
 
 // Get smart contract
 export const getSmartContractController = async (
@@ -70,7 +71,8 @@ export const getTokensController = async (
         IXAVRepository.balanceOfRepo(wallet_address),
         IDONRepository.balanceOfRepo(wallet_address),
         MPCRepository.balanceOfRepo(wallet_address),
-        IMPCRepository.balanceOfRepo(wallet_address)
+        IMPCRepository.balanceOfRepo(wallet_address),
+        DONRepository.balanceOfRepo(wallet_address)
 			]),
 			ChainRepository.forexRepo(requestQuery.currency)
 		]);
