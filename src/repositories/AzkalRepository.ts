@@ -10,7 +10,7 @@ import { api } from '../modules/InitializeAPI';
 export default class AzkalRepository {
   assetId = process.env.AZK_ASSET_ID as string ?? '3';
   azkPrice = '0';
-  azkImage = 'https://images.ctfassets.net/ceadegliwn46/1EC9Xpp5WZXo3A1FnMODfy/44472b58948405d6c7469553a5d9839b/azk.png';
+  azkImage = 'https://images.ctfassets.net/ceadegliwn46/4nnzUbgKvwXHfvce8ILO1G/71cea2a747b28fa120af569199441d83/azk.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;
