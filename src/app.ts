@@ -119,6 +119,7 @@ const app: FastifyPluginAsync<AppOptions> = async (
 				{ name: 'Private DON Token', description: 'IDON related end-points to transact and query on chain\'s asset' },
 				{ name: 'Manny Pacquiao Coin', description: 'MPC related end-points to transact and query on chain\'s asset' },
 				{ name: 'Private MPC Token', description: 'IMPC related end-points to transact and query on chain\'s asset' },
+				{ name: 'Dondon Utility Token', description: 'DON related end-points to transact and query on chain\'s asset' },
 			],
 			definitions: {},
 			securityDefinitions: {

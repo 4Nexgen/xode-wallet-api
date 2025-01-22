@@ -13,6 +13,7 @@ import IXAVRepository from '../repositories/IXAVRepository';
 import IDONRepository from '../repositories/IDONRepository';
 import MPCRepository from '../repositories/MPCRepository';
 import IMPCRepository from '../repositories/IMPCRepository';
+import DONRepository from '../repositories/DondonRepository';
 
 export const mintController = async (
   request: FastifyRequest,
@@ -44,6 +45,8 @@ export const mintController = async (
       result = await MPCRepository.mintRepo(requestBody);
     } else if (request.url.includes("impc")) {
       result = await IMPCRepository.mintRepo(requestBody);
+    } else if (request.url.includes("don")) {
+      result = await DONRepository.mintRepo(requestBody);
     }
     
     if (result instanceof Error) {
@@ -85,6 +88,8 @@ export const transferController = async (
       result = await MPCRepository.transferRepo(requestBody);
     } else if (request.url.includes("impc")) {
       result = await IMPCRepository.transferRepo(requestBody);
+    } else if (request.url.includes("don")) {
+      result = await DONRepository.transferRepo(requestBody);
     }
 
     if (result instanceof Error) {
@@ -126,6 +131,8 @@ export const burnController = async (
       result = await MPCRepository.burnRepo(requestBody);
     } else if (request.url.includes("impc")) {
       result = await IMPCRepository.burnRepo(requestBody);
+    } else if (request.url.includes("don")) {
+      result = await DONRepository.burnRepo(requestBody);
     }
     if (result instanceof Error) {
       throw result;
@@ -158,6 +165,8 @@ export const totalSupplyController = async (
       result = await MPCRepository.totalSupplyRepo();
     } else if (request.url.includes("impc")) {
       result = await IMPCRepository.totalSupplyRepo();
+    } else if (request.url.includes("don")) {
+      result = await DONRepository.totalSupplyRepo();
     }
     if (result instanceof Error) {
       throw result;
@@ -188,6 +197,7 @@ export const balanceOfController = async (
     idon: IDONRepository.balanceOfRepo,
     mpc: MPCRepository.balanceOfRepo,
     impc: IMPCRepository.balanceOfRepo,
+    don: DONRepository.balanceOfRepo,
 	  };
 	  const identifier = Object.keys(repositoryMap).find((key) =>
 		new RegExp(`/${key}/`).test(request.url)
