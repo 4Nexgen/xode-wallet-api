@@ -11,7 +11,7 @@ export default class MPCRepository {
   assetId = (process.env.MPC_ASSET_ID as string) ?? '7';
   mpcPrice = '0';
   mpcImage =
-    'https://images.ctfassets.net/ceadegliwn46/1Z5pQXYSpZNrbnKWesKxtc/bc96d5982cb4dc414f5e0d0ad41b041f/mpc.png';
+    'https://images.ctfassets.net/ceadegliwn46/6vrkHB4DZ7JVgwgqdn7ec9/57a85aedb1257add052294ff9dc503a3/mpc.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;

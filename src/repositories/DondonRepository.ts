@@ -11,7 +11,7 @@ export default class DONRepository {
   assetId = (process.env.DON_ASSET_ID as string) ?? '9';
   donPrice = '0';
   donImage =
-    'https://images.ctfassets.net/ceadegliwn46/36GLn5ySNli6vVflmcnMcx/d92e2a8928cd6892bc8649ec5df86d9f/idon_1.png';
+    'https://images.ctfassets.net/ceadegliwn46/4FEuA38FbcaT1BVoeUshF0/8efbd845b9ad9f1d89935c3117263412/don.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;

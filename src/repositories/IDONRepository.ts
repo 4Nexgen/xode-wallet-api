@@ -11,7 +11,7 @@ export default class IDONRepository {
   assetId = (process.env.IDON_ASSET_ID as string) ?? '6';
   idonPrice = '0';
   idonImage =
-    'https://images.ctfassets.net/ceadegliwn46/3A5zyxdSCLIC9fdiCQ75VX/4c9c3373a6eb6bd6d8003a8b462b94af/idon.png';
+    'https://images.ctfassets.net/ceadegliwn46/715wRrOoeTDeBrBdBIx485/124a6a3066e7be84808137f6a17010a1/idon.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;
