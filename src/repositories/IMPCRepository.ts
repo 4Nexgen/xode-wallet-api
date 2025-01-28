@@ -11,7 +11,7 @@ export default class IMPCRepository {
   assetId = (process.env.IMPC_ASSET_ID as string) ?? '8';
   impcPrice = '0';
   impcImage =
-    'https://images.ctfassets.net/ceadegliwn46/2EuKJcgVYpZxq3VTXbWmZe/2f477a675b3881160d01cfa065cf364f/impc.png';
+    'https://images.ctfassets.net/ceadegliwn46/7gkiJ0DIsXfVylbDRL2lsg/7de3245e2311e34a600144091a7b0c45/impc.png';
   // These are required and changeable
   REFTIME: number = 300000000000;
   PROOFSIZE: number = 500000;
